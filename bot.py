@@ -2,6 +2,7 @@ import discord
 import os
 import re
 import asyncio
+import json
 from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -16,44 +17,59 @@ client_ai = OpenAI(api_key=OPENAI_KEY)
 intents = discord.Intents.default()
 intents.message_content = True
 intents.reactions = True
+intents.guilds = True
 
 bot = discord.Client(intents=intents)
 
 SCAN_KEYWORDS = ["free-picks", "vip-multis", "vip-value-picks"]
 ADELAIDE_OFFSET = timedelta(hours=9, minutes=30)
 
+# Render-safe local file
+REACTION_LOG_FILE = "reaction_log.json"
 
-def get_result(message):
-    for reaction in message.reactions:
-        emoji = str(reaction.emoji)
-
-        if emoji in ["💰", "✅"]:
-            return "win"
-        if emoji == "❌":
-            return "loss"
-        if emoji in ["🔄", "↩️"]:
-            return "void"
-
-    return None
+RESULT_EMOJIS = {
+    "💰": "win",
+    "✅": "win",
+    "❌": "loss",
+    "🔄": "void",
+    "↩️": "void"
+}
 
 
-def parse_bet(message):
+def load_reaction_log():
+    if not os.path.exists(REACTION_LOG_FILE):
+        return {}
+
+    with open(REACTION_LOG_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_reaction_log(data):
+    with open(REACTION_LOG_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+
+
+def now_utc():
+    return datetime.now(timezone.utc)
+
+
+def adelaide_now():
+    return now_utc() + ADELAIDE_OFFSET
+
+
+def message_within_hours(message, hours):
+    return message.created_at >= now_utc() - timedelta(hours=48)
+
+
+def parse_bet(message, result):
     text = message.content.lower()
 
-    # Must have text/caption somewhere on the image message
-    if not text.strip():
-        return None
-
-    # Finds stake anywhere:
-    # 2U, 2.25U, 2 Units, 1.5 Unit
     stake_match = re.search(
-        r"(\d+(?:\.\d+)?)\s*(?:u|unit|units)",
+        r"(\d+(?:\.\d+)?)\s*(?:u|unit|units)\b",
         text,
         re.IGNORECASE
     )
 
-    # Finds odds anywhere:
-    # @ 1.80, @1.80
     odds_match = re.search(
         r"@\s*(\d+(?:\.\d+)?)",
         text,
@@ -61,10 +77,6 @@ def parse_bet(message):
     )
 
     if not stake_match or not odds_match:
-        return None
-
-    result = get_result(message)
-    if result is None:
         return None
 
     stake = float(stake_match.group(1))
@@ -82,37 +94,90 @@ def parse_bet(message):
     return {
         "profit": profit,
         "result": result,
-        "section": section
+        "section": section,
+        "stake": stake,
+        "odds": odds,
+        "channel": message.channel.name
     }
 
 
-def is_today_adelaide(message):
-    now_adelaide = datetime.now(timezone.utc) + ADELAIDE_OFFSET
-    msg_adelaide = message.created_at + ADELAIDE_OFFSET
-    return msg_adelaide.date() == now_adelaide.date()
+def find_results_channel(guild):
+    for channel in guild.text_channels:
+        if "result" in channel.name.lower():
+            return channel
+    return None
+
+
+@bot.event
+async def on_ready():
+    print(f"📊 The Accountant is online as {bot.user}")
+    asyncio.create_task(auto_post())
+
+
+@bot.event
+async def on_raw_reaction_add(payload):
+    emoji = str(payload.emoji)
+
+    if emoji not in RESULT_EMOJIS:
+        return
+
+    if bot.user and payload.user_id == bot.user.id:
+        return
+
+    print("🔥 REACTION DETECTED:", emoji)
+
+    data = load_reaction_log()
+    message_id = str(payload.message_id)
+
+    data[message_id] = {
+        "result": RESULT_EMOJIS[emoji],
+        "emoji": emoji,
+        "reacted_at": now_utc().isoformat(),
+        "channel_id": payload.channel_id,
+        "guild_id": payload.guild_id
+    }
+
+    save_reaction_log(data)
+    print(f"✅ Logged reaction {emoji} on message {message_id}")
 
 
 async def run_recap(guild):
+    reaction_log = load_reaction_log()
     tracked_bets = []
 
-    print("🔍 Scanning today’s channels...")
+    cutoff_reaction = now_utc() - timedelta(hours=17)
+
+    print("🔍 Scanning bets from past 48 hours...")
+    print("⏱ Counting reactions from past 17 hours only...")
 
     for channel in guild.text_channels:
         if any(keyword in channel.name.lower() for keyword in SCAN_KEYWORDS):
             print(f"Scanning {channel.name}")
 
             async for msg in channel.history(limit=500):
-                if not is_today_adelaide(msg):
+                if not message_within_hours(msg, 48):
                     continue
 
-                bet = parse_bet(msg)
+                msg_id = str(msg.id)
+
+                if msg_id not in reaction_log:
+                    continue
+
+                reaction_data = reaction_log[msg_id]
+                reacted_at = datetime.fromisoformat(reaction_data["reacted_at"])
+
+                if reacted_at < cutoff_reaction:
+                    continue
+
+                bet = parse_bet(msg, reaction_data["result"])
+
                 if bet:
                     tracked_bets.append(bet)
 
-    print(f"Found {len(tracked_bets)} bets today")
+    print(f"Found {len(tracked_bets)} newly resulted bets")
 
     if not tracked_bets:
-        return "No bets found for today."
+        return "No new resulted bets found."
 
     free_profit = sum(b["profit"] for b in tracked_bets if b["section"] == "FREE")
     vip_profit = sum(b["profit"] for b in tracked_bets if b["section"] == "VIP")
@@ -129,13 +194,14 @@ Free: {free_profit:.2f}U
 VIP: {vip_profit:.2f}U
 Total: {total_profit:.2f}U
 Wins: {wins}, Losses: {losses}, Voids: {voids}
-$100 bettor: ${total_profit * 100:.0f}
+$50 bettor: ${total_profit * 50:.0f}
 
 Rules:
 - Hype + FOMO
 - Say GREEN if profit, RED if loss
 - Clean Discord formatting
 - Keep it short
+- Use "$50 bettor" NOT "$100 bettor"
 - End with:
 Check out #vip-info to access our premium bets
 """
@@ -148,22 +214,15 @@ Check out #vip-info to access our premium bets
     return response.choices[0].message.content
 
 
-def find_results_channel(guild):
-    for channel in guild.text_channels:
-        if "result" in channel.name.lower():
-            return channel
-    return None
-
-
 async def auto_post():
     await bot.wait_until_ready()
 
     while not bot.is_closed():
-        now_adelaide = datetime.now(timezone.utc) + ADELAIDE_OFFSET
-        print("⏱ Checking Adelaide time:", now_adelaide)
+        now_adl = adelaide_now()
+        print("⏱ Checking Adelaide time:", now_adl)
 
-        if now_adelaide.hour == 21 and now_adelaide.minute == 45:
-            print("🚀 TRIGGERED AUTO POST")
+        if now_adl.hour == 22 and now_adl.minute == 45:
+            print("🚀 TRIGGERED 10:45PM DAILY RECAP")
 
             for guild in bot.guilds:
                 recap = await run_recap(guild)
@@ -182,12 +241,6 @@ async def auto_post():
 
 
 @bot.event
-async def on_ready():
-    print(f"📊 The Accountant is online as {bot.user}")
-    asyncio.create_task(auto_post())
-
-
-@bot.event
 async def on_message(message):
     if message.author == bot.user:
         return
@@ -202,6 +255,10 @@ async def on_message(message):
             )
         else:
             await message.channel.send("❌ Could not find results channel")
+
+    if message.content.startswith("!reactionlog"):
+        data = load_reaction_log()
+        await message.channel.send(f"📊 Logged reactions: {len(data)}")
 
 
 bot.run(TOKEN)
