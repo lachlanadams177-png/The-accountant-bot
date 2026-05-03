@@ -11,7 +11,6 @@ load_dotenv()
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 OPENAI_KEY = os.getenv("OPENAI_API_KEY")
-
 client_ai = OpenAI(api_key=OPENAI_KEY)
 
 intents = discord.Intents.default()
@@ -21,12 +20,18 @@ intents.guilds = True
 
 bot = discord.Client(intents=intents)
 
-SCAN_KEYWORDS = ["free-picks", "vip-multis", "vip-value-picks"]
+SCAN_CHANNEL_KEYWORDS = ["free-picks", "vip-multis", "vip-value-picks"]
+RESULTS_CHANNEL_KEYWORD = "results"
+ANNOUNCEMENTS_CHANNEL_KEYWORD = "announcements"
+
 ADELAIDE_OFFSET = timedelta(hours=9, minutes=30)
 
-REACTION_LOG_FILE = "reaction_log.json"
+BET_LOG_FILE = "bet_log.json"
+DAILY_LOG_FILE = "daily_log.json"
 SERVER_STATS_FILE = "server_stats.json"
-SERVER_STARTING_PROFIT = 30.00
+
+SERVER_STARTING_PROFIT = 13.05
+UNIT_VALUE = 50
 
 RESULT_EMOJIS = {
     "💰": "win",
@@ -37,31 +42,18 @@ RESULT_EMOJIS = {
 }
 
 
-def load_reaction_log():
-    if not os.path.exists(REACTION_LOG_FILE):
-        return {}
-    with open(REACTION_LOG_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+def load_json(path, default):
+    if not os.path.exists(path):
+        return default
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return default
 
 
-def save_reaction_log(data):
-    with open(REACTION_LOG_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
-
-
-def load_server_stats():
-    if not os.path.exists(SERVER_STATS_FILE):
-        return {
-            "server_total_profit": SERVER_STARTING_PROFIT,
-            "counted_daily_dates": []
-        }
-
-    with open(SERVER_STATS_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-
-def save_server_stats(data):
-    with open(SERVER_STATS_FILE, "w", encoding="utf-8") as f:
+def save_json(path, data):
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
 
@@ -77,80 +69,170 @@ def to_adelaide(dt):
     return dt + ADELAIDE_OFFSET
 
 
-def message_within_hours(message, hours):
-    return message.created_at >= now_utc() - timedelta(hours=hours)
+def today_key():
+    return adelaide_now().strftime("%Y-%m-%d")
 
 
-def parse_bet(message, result):
-    text = message.content.lower()
+def is_bet_channel(channel_name):
+    name = channel_name.lower()
+    return any(k in name for k in SCAN_CHANNEL_KEYWORDS)
 
-    stake_match = re.search(
-        r"(\d+(?:\.\d+)?)\s*(?:u|unit|units)\b",
-        text,
-        re.IGNORECASE
-    )
 
-    odds_match = re.search(
-        r"@\s*(\d+(?:\.\d+)?)",
-        text,
-        re.IGNORECASE
-    )
+def find_channel(guild, keyword):
+    for channel in guild.text_channels:
+        if keyword.lower() in channel.name.lower():
+            return channel
+    return None
 
-    if not stake_match or not odds_match:
-        return None
 
-    stake = float(stake_match.group(1))
-    odds = float(odds_match.group(1))
+def parse_units(text):
+    match = re.search(r"(\d+(?:\.\d+)?)\s*(?:u|unit|units)\b", text, re.I)
+    return float(match.group(1)) if match else None
 
+
+def parse_odds(text):
+    match = re.search(r"@\s*(\d+(?:\.\d+)?)", text, re.I)
+    return float(match.group(1)) if match else None
+
+
+def calc_profit(stake, odds, result):
     if result == "win":
-        profit = stake * (odds - 1)
-    elif result == "loss":
-        profit = -stake
-    else:
-        profit = 0
-
-    section = "VIP" if "vip" in message.channel.name.lower() else "FREE"
-
-    return {
-        "profit": profit,
-        "result": result,
-        "section": section,
-        "stake": stake,
-        "odds": odds,
-        "channel": message.channel.name
-    }
+        return round(stake * (odds - 1), 2)
+    if result == "loss":
+        return round(-stake, 2)
+    return 0.0
 
 
-def summarize_bets(tracked_bets):
-    free_profit = sum(b["profit"] for b in tracked_bets if b["section"] == "FREE")
-    vip_profit = sum(b["profit"] for b in tracked_bets if b["section"] == "VIP")
-    total_profit = free_profit + vip_profit
-
-    wins = sum(1 for b in tracked_bets if b["result"] == "win")
-    losses = sum(1 for b in tracked_bets if b["result"] == "loss")
-    voids = sum(1 for b in tracked_bets if b["result"] == "void")
-
-    return free_profit, vip_profit, total_profit, wins, losses, voids
+def load_bets():
+    return load_json(BET_LOG_FILE, {})
 
 
-def find_results_channel(guild):
-    for channel in guild.text_channels:
-        if "result" in channel.name.lower():
-            return channel
-    return None
+def save_bets(data):
+    save_json(BET_LOG_FILE, data)
 
 
-def find_announcements_channel(guild):
-    for channel in guild.text_channels:
-        if "announcement" in channel.name.lower():
-            return channel
-    return None
+def load_daily():
+    return load_json(DAILY_LOG_FILE, {})
+
+
+def save_daily(data):
+    save_json(DAILY_LOG_FILE, data)
+
+
+def load_stats():
+    return load_json(SERVER_STATS_FILE, {
+        "server_total_profit": SERVER_STARTING_PROFIT,
+        "counted_days": []
+    })
+
+
+def save_stats(data):
+    save_json(SERVER_STATS_FILE, data)
+
+
+def summarize(bets):
+    free = round(sum(b["profit"] for b in bets if b["section"] == "FREE"), 2)
+    vip = round(sum(b["profit"] for b in bets if b["section"] == "VIP"), 2)
+    total = round(free + vip, 2)
+    wins = sum(1 for b in bets if b["result"] == "win")
+    losses = sum(1 for b in bets if b["result"] == "loss")
+    voids = sum(1 for b in bets if b["result"] == "void")
+    return free, vip, total, wins, losses, voids
+
+
+def weekly_window():
+    now = adelaide_now()
+    monday = now - timedelta(days=now.weekday())
+    start = monday.replace(hour=4, minute=0, second=0, microsecond=0)
+    end = start + timedelta(days=6, hours=18)
+    return start, end
+
+
+async def build_daily_post(bets):
+    if not bets:
+        return "No settled bets found today."
+
+    free, vip, total, wins, losses, voids = summarize(bets)
+
+    prompt = f"""
+Write a short Discord betting daily recap.
+
+Free: {free:.2f}U
+VIP: {vip:.2f}U
+Total: {total:.2f}U
+Wins: {wins}, Losses: {losses}, Voids: {voids}
+$50 bettor: ${total * UNIT_VALUE:.0f}
+
+Rules:
+- Clean Discord format
+- Hype if green
+- Calm and confident if red
+- Mention bankroll and consistency if red
+- Keep it short
+- End with: Check out #vip-info to access our premium bets
+"""
+
+    res = client_ai.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return res.choices[0].message.content
+
+
+async def build_weekly_post(bets, server_total):
+    if not bets:
+        return (
+            f"No weekly results found.\n\n"
+            f"📊 Total Server Profit: {server_total:+.2f}U\n"
+            f"💰 That’s {server_total * UNIT_VALUE:+.0f} total server profit for a $50 bettor."
+        )
+
+    free, vip, total, wins, losses, voids = summarize(bets)
+
+    prompt = f"""
+Write a weekly Discord betting results recap.
+
+Free: {free:.2f}U
+VIP: {vip:.2f}U
+Weekly Profit: {total:.2f}U
+Wins: {wins}, Losses: {losses}, Voids: {voids}
+$50 bettor weekly result: ${total * UNIT_VALUE:.0f}
+
+Total Server Profit: {server_total:.2f}U
+$50 bettor total server profit: ${server_total * UNIT_VALUE:.0f}
+
+Rules:
+- Clean Discord format
+- Big hype if profitable
+- If negative, stay confident and say we rebuild, stay consistent, and keep growing the bankroll
+- Mention: Total Server Profit: {server_total:+.2f}U
+- Mention: That’s {server_total * UNIT_VALUE:+.0f} total server profit for a $50 bettor
+- Keep it powerful but not too long
+- End with: Check out #vip-info to access our premium bets
+"""
+
+    res = client_ai.chat.completions.create(
+        model="gpt-4.1-mini",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return res.choices[0].message.content
+
+
+async def fetch_message_from_payload(payload):
+    channel = bot.get_channel(payload.channel_id)
+    if channel is None:
+        return None
+    try:
+        return await channel.fetch_message(payload.message_id)
+    except Exception as e:
+        print("Could not fetch message:", e)
+        return None
 
 
 @bot.event
 async def on_ready():
     print(f"📊 The Accountant is online as {bot.user}")
-    asyncio.create_task(auto_post())
+    asyncio.create_task(auto_loop())
 
 
 @bot.event
@@ -163,239 +245,139 @@ async def on_raw_reaction_add(payload):
     if bot.user and payload.user_id == bot.user.id:
         return
 
-    print("🔥 REACTION DETECTED:", emoji)
+    message = await fetch_message_from_payload(payload)
+    if message is None:
+        return
 
-    data = load_reaction_log()
-    message_id = str(payload.message_id)
+    if not is_bet_channel(message.channel.name):
+        return
 
-    data[message_id] = {
-        "result": RESULT_EMOJIS[emoji],
-        "emoji": emoji,
-        "reacted_at": now_utc().isoformat(),
-        "channel_id": payload.channel_id,
-        "guild_id": payload.guild_id
+    text = message.content or ""
+    stake = parse_units(text)
+    odds = parse_odds(text)
+
+    if stake is None or odds is None:
+        print("Ignored reaction: no stake or odds in message.")
+        return
+
+    result = RESULT_EMOJIS[emoji]
+    profit = calc_profit(stake, odds, result)
+    section = "VIP" if "vip" in message.channel.name.lower() else "FREE"
+
+    bets = load_bets()
+    msg_id = str(message.id)
+
+    bets[msg_id] = {
+        "message_id": msg_id,
+        "channel_name": message.channel.name,
+        "section": section,
+        "stake": stake,
+        "odds": odds,
+        "result": result,
+        "profit": profit,
+        "message_created_at_utc": message.created_at.isoformat(),
+        "resulted_at_utc": now_utc().isoformat(),
+        "content_preview": text[:300]
     }
 
-    save_reaction_log(data)
-    print(f"✅ Logged reaction {emoji} on message {message_id}")
+    save_bets(bets)
+    print(f"✅ Saved result {result} | {stake}U @ {odds} | {profit:+.2f}U")
 
 
-async def collect_daily_bets(guild):
-    reaction_log = load_reaction_log()
-    tracked_bets = []
+@bot.event
+async def on_raw_reaction_remove(payload):
+    emoji = str(payload.emoji)
 
-    cutoff_reaction = now_utc() - timedelta(hours=17)
+    if emoji not in RESULT_EMOJIS:
+        return
 
-    for channel in guild.text_channels:
-        if any(keyword in channel.name.lower() for keyword in SCAN_KEYWORDS):
-            async for msg in channel.history(limit=500):
-                if not message_within_hours(msg, 48):
-                    continue
+    bets = load_bets()
+    msg_id = str(payload.message_id)
 
-                msg_id = str(msg.id)
-
-                if msg_id not in reaction_log:
-                    continue
-
-                reaction_data = reaction_log[msg_id]
-                reacted_at = datetime.fromisoformat(reaction_data["reacted_at"])
-
-                if reacted_at < cutoff_reaction:
-                    continue
-
-                bet = parse_bet(msg, reaction_data["result"])
-
-                if bet:
-                    tracked_bets.append(bet)
-
-    return tracked_bets
+    if msg_id in bets:
+        del bets[msg_id]
+        save_bets(bets)
+        print(f"🗑 Removed result for message {msg_id}")
 
 
-async def collect_weekly_bets(guild):
-    reaction_log = load_reaction_log()
-    tracked_bets = []
+def get_bets_resulted_between(start_adl, end_adl):
+    bets = load_bets()
+    results = []
 
-    now_adl = adelaide_now()
+    for b in bets.values():
+        resulted_utc = datetime.fromisoformat(b["resulted_at_utc"])
+        resulted_adl = to_adelaide(resulted_utc)
 
-    monday = now_adl - timedelta(days=now_adl.weekday())
-    week_start = monday.replace(hour=4, minute=0, second=0, microsecond=0)
-    week_end = week_start + timedelta(days=6, hours=18)
+        if start_adl <= resulted_adl <= end_adl:
+            results.append(b)
 
-    print("📆 Weekly recap window:")
-    print("START:", week_start)
-    print("END:", week_end)
-
-    for channel in guild.text_channels:
-        if any(keyword in channel.name.lower() for keyword in SCAN_KEYWORDS):
-            print(f"Weekly scanning {channel.name}")
-
-            async for msg in channel.history(limit=1500):
-                msg_adl = to_adelaide(msg.created_at)
-
-                if msg_adl < week_start or msg_adl > week_end:
-                    continue
-
-                msg_id = str(msg.id)
-
-                if msg_id not in reaction_log:
-                    continue
-
-                reaction_data = reaction_log[msg_id]
-                reacted_at_utc = datetime.fromisoformat(reaction_data["reacted_at"])
-                reacted_at_adl = to_adelaide(reacted_at_utc)
-
-                if reacted_at_adl < week_start or reacted_at_adl > week_end:
-                    continue
-
-                bet = parse_bet(msg, reaction_data["result"])
-
-                if bet:
-                    tracked_bets.append(bet)
-
-    print(f"Found {len(tracked_bets)} weekly bets")
-    return tracked_bets
+    return results
 
 
-async def build_daily_recap(tracked_bets):
-    if not tracked_bets:
-        return "No new resulted bets found."
-
-    free_profit, vip_profit, total_profit, wins, losses, voids = summarize_bets(tracked_bets)
-
-    prompt = f"""
-Write a hype Discord betting recap.
-
-Free: {free_profit:.2f}U
-VIP: {vip_profit:.2f}U
-Total: {total_profit:.2f}U
-Wins: {wins}, Losses: {losses}, Voids: {voids}
-$50 bettor: ${total_profit * 50:.0f}
-
-Rules:
-- Hype + FOMO
-- Say GREEN if profit, RED if loss
-- Clean Discord formatting
-- Keep it short
-- Use "$50 bettor" NOT "$100 bettor"
-- End with:
-Check out #vip-info to access our premium bets
-"""
-
-    response = client_ai.chat.completions.create(
-        model="gpt-4.1-mini",
-        messages=[{"role": "user", "content": prompt}]
-    )
-
-    return response.choices[0].message.content
+def get_today_bets():
+    now = adelaide_now()
+    start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    end = now
+    return get_bets_resulted_between(start, end)
 
 
-async def build_weekly_recap(tracked_bets, server_total_profit):
-    if not tracked_bets:
-        return f"""
-No weekly results found.
+def add_today_to_server_total(total):
+    stats = load_stats()
+    key = today_key()
 
-📊 Total Server Profit: {server_total_profit:+.2f}U
-💰 That’s {server_total_profit * 50:+.0f} profit for a $50 bettor.
-"""
-
-    free_profit, vip_profit, weekly_profit, wins, losses, voids = summarize_bets(tracked_bets)
-
-    prompt = f"""
-Write a weekly Discord betting results recap.
-
-Free: {free_profit:.2f}U
-VIP: {vip_profit:.2f}U
-Weekly Profit: {weekly_profit:.2f}U
-Wins: {wins}, Losses: {losses}, Voids: {voids}
-$50 bettor weekly result: ${weekly_profit * 50:.0f}
-
-Total Server Profit: {server_total_profit:.2f}U
-$50 bettor total server profit: ${server_total_profit * 50:.0f}
-
-Rules:
-- This is a WEEKLY recap
-- Big hype write-up if profitable
-- If negative, stay confident and positive, say we rebuild, stay consistent, and keep growing the bankroll
-- Clean Discord formatting
-- Mention weekly profit clearly
-- Include this line clearly: "Total Server Profit: +{server_total_profit:.2f}U"
-- Include this line clearly: "That’s +${server_total_profit * 50:.0f} total server profit for a $50 bettor"
-- Keep it powerful but not too long
-- End with:
-Check out #vip-info to access our premium bets
-"""
-
-    response = client_ai.chat.completions.create(
-        model="gpt-4.1-mini",
-        messages=[{"role": "user", "content": prompt}]
-    )
-
-    return response.choices[0].message.content
-
-
-def add_daily_profit_to_server_total(total_profit):
-    stats = load_server_stats()
-    today_key = adelaide_now().strftime("%Y-%m-%d")
-
-    if today_key not in stats["counted_daily_dates"]:
-        stats["server_total_profit"] += total_profit
-        stats["counted_daily_dates"].append(today_key)
-        save_server_stats(stats)
-        print(f"✅ Added {total_profit:.2f}U to server total for {today_key}")
-    else:
-        print(f"⚠️ Daily profit for {today_key} already counted.")
+    if key not in stats["counted_days"]:
+        stats["server_total_profit"] = round(stats["server_total_profit"] + total, 2)
+        stats["counted_days"].append(key)
+        save_stats(stats)
 
     return stats["server_total_profit"]
 
 
-async def run_daily_recap(guild, update_server_total=False):
-    tracked_bets = await collect_daily_bets(guild)
+async def post_daily(guild, update_total=True):
+    bets = get_today_bets()
+    _, _, total, _, _, _ = summarize(bets) if bets else (0, 0, 0, 0, 0, 0)
 
-    total_profit = 0
-    if tracked_bets:
-        _, _, total_profit, _, _, _ = summarize_bets(tracked_bets)
+    if update_total:
+        add_today_to_server_total(total)
 
-    if update_server_total:
-        add_daily_profit_to_server_total(total_profit)
+    post = await build_daily_post(bets)
+    channel = find_channel(guild, RESULTS_CHANNEL_KEYWORD)
 
-    return await build_daily_recap(tracked_bets)
-
-
-async def run_weekly_recap(guild):
-    tracked_bets = await collect_weekly_bets(guild)
-    stats = load_server_stats()
-    server_total_profit = stats["server_total_profit"]
-
-    return await build_weekly_recap(tracked_bets, server_total_profit)
+    if channel:
+        await channel.send(f"📊 **Daily Results Recap** 📊\n\n{post}")
 
 
-async def auto_post():
+async def post_weekly(guild):
+    start, end = weekly_window()
+    bets = get_bets_resulted_between(start, end)
+    stats = load_stats()
+    post = await build_weekly_post(bets, stats["server_total_profit"])
+
+    channel = find_channel(guild, ANNOUNCEMENTS_CHANNEL_KEYWORD)
+    if channel:
+        await channel.send(f"🔥 **WEEKLY RESULTS RECAP** 🔥\n\n{post}")
+
+
+async def auto_loop():
     await bot.wait_until_ready()
 
+    last_daily_post = None
+    last_weekly_post = None
+
     while not bot.is_closed():
-        now_adl = adelaide_now()
-        print("⏱ Checking Adelaide time:", now_adl)
+        now = adelaide_now()
+        key = now.strftime("%Y-%m-%d")
 
-        if now_adl.hour == 22 and now_adl.minute == 45:
-            for guild in bot.guilds:
-                daily_recap = await run_daily_recap(guild, update_server_total=True)
-                results_channel = find_results_channel(guild)
+        if now.hour == 22 and now.minute == 45:
+            if last_daily_post != key:
+                for guild in bot.guilds:
+                    await post_daily(guild, update_total=True)
 
-                if results_channel:
-                    await results_channel.send(
-                        f"📊 **Daily Results Recap** 📊\n\n{daily_recap}"
-                    )
+                    if now.weekday() == 6 and last_weekly_post != key:
+                        await post_weekly(guild)
+                        last_weekly_post = key
 
-                if now_adl.weekday() == 6:
-                    weekly_recap = await run_weekly_recap(guild)
-                    announcements_channel = find_announcements_channel(guild)
-
-                    if announcements_channel:
-                        await announcements_channel.send(
-                            f"🔥 **WEEKLY RESULTS RECAP** 🔥\n\n{weekly_recap}"
-                        )
-                    else:
-                        print("❌ Could not find announcements channel")
+                last_daily_post = key
 
             await asyncio.sleep(60)
 
@@ -408,36 +390,51 @@ async def on_message(message):
         return
 
     if message.content.startswith("!testrecap"):
-        recap = await run_daily_recap(message.guild, update_server_total=False)
-        results_channel = find_results_channel(message.guild)
-
-        if results_channel:
-            await results_channel.send(
-                f"📊 **Daily Results Recap TEST** 📊\n\n{recap}"
-            )
+        await post_daily(message.guild, update_total=False)
 
     if message.content.startswith("!testweekly"):
-        recap = await run_weekly_recap(message.guild)
-        announcements_channel = find_announcements_channel(message.guild)
+        await post_weekly(message.guild)
 
-        if announcements_channel:
-            await announcements_channel.send(
-                f"🔥 **WEEKLY RESULTS RECAP TEST** 🔥\n\n{recap}"
-            )
-        else:
-            await message.channel.send("❌ Could not find announcements channel")
+    if message.content.startswith("!betlog"):
+        bets = load_bets()
+        await message.channel.send(f"📊 Tracked settled bets: {len(bets)}")
 
-    if message.content.startswith("!reactionlog"):
-        data = load_reaction_log()
-        await message.channel.send(f"📊 Logged reactions: {len(data)}")
+    if message.content.startswith("!today"):
+        bets = get_today_bets()
+        free, vip, total, wins, losses, voids = summarize(bets) if bets else (0, 0, 0, 0, 0, 0)
+        await message.channel.send(
+            f"📊 Today\nFree: {free:+.2f}U\nVIP: {vip:+.2f}U\n"
+            f"Total: {total:+.2f}U\nRecord: {wins}W / {losses}L / {voids}V"
+        )
+
+    if message.content.startswith("!weekly"):
+        start, end = weekly_window()
+        bets = get_bets_resulted_between(start, end)
+        free, vip, total, wins, losses, voids = summarize(bets) if bets else (0, 0, 0, 0, 0, 0)
+        await message.channel.send(
+            f"📊 Weekly\nFree: {free:+.2f}U\nVIP: {vip:+.2f}U\n"
+            f"Total: {total:+.2f}U\nRecord: {wins}W / {losses}L / {voids}V"
+        )
 
     if message.content.startswith("!servertotal"):
-        stats = load_server_stats()
+        stats = load_stats()
         total = stats["server_total_profit"]
         await message.channel.send(
             f"📊 Total Server Profit: {total:+.2f}U\n"
-            f"💰 That’s {total * 50:+.0f} total server profit for a $50 bettor."
+            f"💰 That’s {total * UNIT_VALUE:+.0f} total server profit for a $50 bettor."
         )
+
+    if message.content.startswith("!setservertotal"):
+        parts = message.content.split()
+        if len(parts) >= 2:
+            try:
+                new_total = float(parts[1])
+                stats = load_stats()
+                stats["server_total_profit"] = new_total
+                save_stats(stats)
+                await message.channel.send(f"✅ Server total set to {new_total:+.2f}U")
+            except ValueError:
+                await message.channel.send("❌ Use: !setservertotal 13.05")
 
 
 bot.run(TOKEN)
