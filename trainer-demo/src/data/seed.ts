@@ -19,7 +19,7 @@ import { makeClientCopy, generateSessions } from '../lib/programs'
 import { mdToHtml, setCount } from '../lib/workout'
 import { exerciseByName } from './exercises'
 
-export const DATA_VERSION = 3
+export const DATA_VERSION = 4
 
 /* ───────────── helpers for writing seed workouts compactly */
 
@@ -754,7 +754,7 @@ export function createSeedData(): DemoData {
   return {
     version: DATA_VERSION,
     seededOn: t,
-    trainer: { name: 'Sarah Mitchell', business: 'Sarah Mitchell PT' },
+    trainer: { name: 'Casey', business: 'Muscle Up Strength & Conditioning' },
     clients,
     workouts,
     programs,

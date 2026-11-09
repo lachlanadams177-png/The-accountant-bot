@@ -398,8 +398,14 @@ export const useStore = create<Store>()(
     {
       name: 'muscleup-demo',
       version: DATA_VERSION,
-      // A data-shape change re-seeds rather than trying to migrate old demo data.
-      migrate: () => {
+      migrate: (persisted, fromVersion) => {
+        // v3 → v4: the trainer is Casey. Keep everything else the user has changed.
+        if (fromVersion === 3 && persisted && typeof persisted === 'object') {
+          const old = persisted as Store
+          const trainer = old.trainer?.name === 'Sarah Mitchell' ? { name: 'Casey', business: 'Muscle Up Strength & Conditioning' } : old.trainer
+          return { ...old, trainer } as Store
+        }
+        // Any older data shape re-seeds rather than trying to migrate old demo data.
         const fresh = createSeedData()
         return { ...fresh, ...initialUi(fresh) } as unknown as Store
       },
