@@ -25,7 +25,7 @@ import type { Workout, WorkoutMode } from '../../types'
 type Body = Pick<Workout, 'name' | 'mode' | 'html' | 'blocks'>
 const bodyOf = (w: Workout): Body => ({ name: w.name, mode: w.mode, html: w.html, blocks: w.blocks })
 const same = (a: Body, b: Body) => JSON.stringify(a) === JSON.stringify(b)
-const draftKey = (id: string) => `fernly-draft:${id}`
+const draftKey = (id: string) => `muscleup-draft:${id}`
 
 export function WorkoutEditor() {
   const { id } = useParams()

@@ -105,7 +105,7 @@ export const useStore = create<Store>()(
           set({ ...fresh, ...initialUi(fresh) })
           // clear any saved workout drafts too
           Object.keys(localStorage)
-            .filter((k) => k.startsWith('fernly-draft:') || k.startsWith('fernly-log:'))
+            .filter((k) => k.startsWith('muscleup-draft:') || k.startsWith('muscleup-log:'))
             .forEach((k) => localStorage.removeItem(k))
         },
         updateTrainer: (p) => set((s) => ({ trainer: { ...s.trainer, ...p } })),
@@ -396,7 +396,7 @@ export const useStore = create<Store>()(
       }
     },
     {
-      name: 'fernly-demo',
+      name: 'muscleup-demo',
       version: DATA_VERSION,
       // A data-shape change re-seeds rather than trying to migrate old demo data.
       migrate: () => {
@@ -412,4 +412,4 @@ export const useStore = create<Store>()(
 )
 
 // Handy for poking at demo data from the browser console during development.
-if (import.meta.env.DEV) (window as unknown as { __fernly: typeof useStore }).__fernly = useStore
+if (import.meta.env.DEV) (window as unknown as { __muscleup: typeof useStore }).__muscleup = useStore

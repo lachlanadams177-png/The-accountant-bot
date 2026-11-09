@@ -1,4 +1,4 @@
-# Fernly — personal training, made simple (interactive demo)
+# Muscle up, strength and conditioning — interactive demo
 
 A working, clickable demo of a simpler personal-training platform: a trainer dashboard for
 desktop/tablet and a mobile-first client app. It runs entirely on your own computer, with no accounts,
@@ -62,8 +62,8 @@ All names, contact details and data are made up.
 
 ### Where it's saved
 
-Everything is stored in your browser's **localStorage** under the key `fernly-demo`, plus small
-draft entries (`fernly-draft:*`, `fernly-log:*`). Refreshing keeps your changes. A different browser,
+Everything is stored in your browser's **localStorage** under the key `muscleup-demo`, plus small
+draft entries (`muscleup-draft:*`, `muscleup-log:*`). Refreshing keeps your changes. A different browser,
 a private window or clearing site data starts again with fresh example data. **Reset Demo Data** in
 Settings does the same on purpose.
 

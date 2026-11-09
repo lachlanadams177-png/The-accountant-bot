@@ -4,7 +4,7 @@ const { chromium } = require('playwright');
 const URL = 'http://localhost:5173';
 const results = [];
 const ok = (name, cond, info = '') => { results.push(`${cond ? 'PASS' : 'FAIL'}  ${name}${info ? ' — ' + info : ''}`); };
-const S = (p) => p.evaluate(() => window.__fernly.getState());
+const S = (p) => p.evaluate(() => window.__muscleup.getState());
 
 (async () => {
   const b = await chromium.launch();
@@ -194,6 +194,7 @@ const S = (p) => p.evaluate(() => window.__fernly.getState());
     const m = await b.newPage({ viewport: { width: 390, height: 844 } });
     await m.goto(URL + '/');
     await m.waitForTimeout(400);
+    const dashOverflow = await m.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
     const nav = m.locator('nav[aria-label="Main"]').last();
     await nav.getByRole('link', { name: 'Clients' }).click(); await m.waitForURL(/\/clients$/);
     await nav.getByRole('link', { name: 'Calendar' }).click(); await m.waitForURL(/\/calendar/);
@@ -205,7 +206,7 @@ const S = (p) => p.evaluate(() => window.__fernly.getState());
     await cnav.getByRole('link', { name: 'Workouts' }).click(); await m.waitForURL(/\/client\/workouts/);
     await m.screenshot({ path: require('path').join(process.argv[2] || '.', 'mobile_client.png') });
     const overflow = await m.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
-    ok('I mobile navigation', !overflow, `horizontal overflow=${overflow}`);
+    ok('I mobile navigation', !overflow && !dashOverflow, `overflow client=${overflow} dashboard=${dashOverflow}`);
     await m.close();
   });
 

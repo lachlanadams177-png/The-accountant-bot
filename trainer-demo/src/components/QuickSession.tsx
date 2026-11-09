@@ -12,7 +12,7 @@ import { fmtDay, today } from '../lib/date'
 import { blocksToHtml, isHtmlEmpty } from '../lib/workout'
 import { uid } from '../lib/id'
 
-const DRAFT_KEY = 'fernly-draft:quick-session'
+const DRAFT_KEY = 'muscleup-draft:quick-session'
 
 /**
  * The fastest path in the app: pick a client, pick a day, type, save.

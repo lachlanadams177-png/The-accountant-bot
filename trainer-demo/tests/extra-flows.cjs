@@ -3,7 +3,7 @@
 const { chromium } = require('playwright');
 const URL = 'http://localhost:5173';
 const out = []; const ok = (n, c, i='') => out.push(`${c ? 'PASS' : 'FAIL'}  ${n}${i ? ' — ' + i : ''}`);
-const S = (p) => p.evaluate(() => window.__fernly.getState());
+const S = (p) => p.evaluate(() => window.__muscleup.getState());
 (async () => {
   const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
   const errs = []; p.on('pageerror', e => errs.push(e.message));

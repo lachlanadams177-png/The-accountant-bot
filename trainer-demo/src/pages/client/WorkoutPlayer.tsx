@@ -24,7 +24,7 @@ export function WorkoutPlayer() {
   const clientId = useStore((s) => s.demoClientId)
   const trainer = useStore((s) => s.trainer)
   const completeSession = useStore((s) => s.completeSession)
-  const logKey = `fernly-log:${sessionId}`
+  const logKey = `muscleup-log:${sessionId}`
 
   const groupRounds = useMemo(() => {
     const m = new Map<string, string | undefined>()
