@@ -78,12 +78,12 @@ export function QuickSessionModal() {
       open={!!prefill}
       onClose={close}
       size="lg"
-      title={<span className="inline-flex items-center gap-2"><Zap size={18} className="text-sage-600" /> Quick Session</span>}
+      title={<span className="inline-flex items-center gap-2"><Zap size={18} className="text-brand-600" /> Quick Session</span>}
       description="Write a one-off session and send it straight to a client. Your text is saved as you type."
       footer={
         <>
           <label className="mr-auto inline-flex items-center gap-2 text-sm text-ink-soft cursor-pointer">
-            <input type="checkbox" className="h-4 w-4 accent-sage-600" checked={asTemplate} onChange={(e) => setAsTemplate(e.target.checked)} />
+            <input type="checkbox" className="h-4 w-4 accent-brand-600" checked={asTemplate} onChange={(e) => setAsTemplate(e.target.checked)} />
             Also save as a reusable template
           </label>
           <Button variant="ghost" onClick={close}>Cancel</Button>

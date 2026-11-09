@@ -2,7 +2,7 @@ import { forwardRef, useId, type InputHTMLAttributes, type ReactNode, type Selec
 import { cn } from '../../lib/cn'
 
 export const inputCls =
-  'w-full h-10 rounded-xl border border-line bg-white px-3 text-sm text-ink placeholder:text-muted/80 transition-colors hover:border-line-strong focus:border-sage-400 focus:outline-none focus:ring-4 focus:ring-sage-100'
+  'w-full h-10 rounded-xl border border-line bg-white px-3 text-sm text-ink placeholder:text-muted/80 transition-colors hover:border-line-strong focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-100'
 
 export function Field({ label, hint, children, optional, className, htmlFor }: { label: string; hint?: string; children: ReactNode; optional?: boolean; className?: string; htmlFor?: string }) {
   return (

@@ -58,7 +58,7 @@ export function Dashboard() {
     <div className="space-y-6">
       <div>
         <p className="text-sm text-muted">{fmtLong(t)}</p>
-        <h1 className="mt-1 text-[28px] sm:text-[32px] font-semibold tracking-tight">{greeting()}, {data.trainer.name.split(' ')[0]}</h1>
+        <h1 className="mt-1 text-[28px] sm:text-[32px] font-bold tracking-tight">{greeting()}, {data.trainer.name.split(' ')[0]}</h1>
         <p className="mt-1 text-[15px] text-ink-soft">Here’s what’s happening with your clients today.</p>
       </div>
 
@@ -67,8 +67,8 @@ export function Dashboard() {
         {actions.map((a) => (
           <button key={a.label} onClick={a.onClick}
             className={cn('group flex items-center gap-3 rounded-2xl px-4 h-16 text-left font-medium transition-all active:scale-[0.98]',
-              a.primary ? 'bg-sage-600 text-white hover:bg-sage-700 shadow-lift col-span-2 sm:col-span-1' : 'bg-white border border-line/70 shadow-card hover:shadow-lift hover:border-line-strong')}>
-            <span className={cn('flex h-9 w-9 items-center justify-center rounded-xl', a.primary ? 'bg-white/15' : 'bg-sage-50 text-sage-600')}><a.icon size={18} /></span>
+              a.primary ? 'bg-brand-600 text-white hover:bg-brand-700 shadow-lift col-span-2 sm:col-span-1' : 'bg-white border border-line/70 shadow-card hover:shadow-lift hover:border-line-strong')}>
+            <span className={cn('flex h-9 w-9 items-center justify-center rounded-xl', a.primary ? 'bg-white/15' : 'bg-brand-50 text-brand-600')}><a.icon size={18} /></span>
             <span className="text-[14.5px]">{a.label}</span>
           </button>
         ))}
@@ -81,7 +81,7 @@ export function Dashboard() {
             <>
               <div className="flex items-start justify-between gap-2">
                 <span className="text-[13px] font-medium text-muted leading-snug">{s.label}</span>
-                <s.icon size={17} className={"shrink-0 " + (s.warn ? 'text-warn' : 'text-sage-500')} />
+                <s.icon size={17} className={"shrink-0 " + (s.warn ? 'text-warn' : 'text-brand-500')} />
               </div>
               <div className="mt-2 flex items-baseline gap-2">
                 <span className="text-[28px] font-semibold tracking-tight tabular-nums">{s.value}</span>
@@ -100,7 +100,7 @@ export function Dashboard() {
         <div className="space-y-6">
           {/* Today */}
           <Card>
-            <CardHeader title="Today" icon={CalendarClock} subtitle={`${todays.length} session${todays.length === 1 ? '' : 's'} on the calendar`} action={<Link to="/calendar" className="text-sm text-sage-700 hover:underline">Calendar</Link>} />
+            <CardHeader title="Today’s sessions" icon={CalendarClock} subtitle={todays.length ? `${todays.length} session${todays.length === 1 ? '' : 's'} · tap one to see the prepared workout` : undefined} action={<Link to="/calendar" className="text-sm text-brand-700 hover:underline">Calendar</Link>} />
             {todays.length === 0 ? (
               <EmptyState icon={CalendarDays} title="Nothing scheduled today" text="Enjoy the breather, or write a quick session for someone." className="py-6" />
             ) : (
@@ -110,7 +110,7 @@ export function Dashboard() {
                   const st = sessionState(s)
                   return (
                     <li key={s.id}>
-                      <button onClick={() => setOpenSession(s.id)} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-stone-50">
+                      <button onClick={() => setOpenSession(s.id)} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-neutral-50">
                         <span className="w-16 text-[13px] text-muted tabular-nums">{s.time ? fmtClock(s.time) : 'Any time'}</span>
                         <Avatar name={c.name} color={c.color} size={32} />
                         <span className="flex-1 min-w-0">
@@ -152,7 +152,7 @@ export function Dashboard() {
                   const to = a.reason === 'message' ? `/messages/${a.client.id}` : a.reason === 'checkin' ? `/clients/${a.client.id}?tab=progress` : `/clients/${a.client.id}?tab=program`
                   return (
                     <li key={i} className="flex items-center gap-1">
-                      <Link to={to} className="flex flex-1 min-w-0 items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-stone-50">
+                      <Link to={to} className="flex flex-1 min-w-0 items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-neutral-50">
                         <Avatar name={a.client.name} color={a.client.color} size={34} />
                         <span className="flex-1 min-w-0">
                           <span className="flex items-center gap-2 text-sm"><span className="font-medium">{a.client.name}</span></span>
@@ -163,7 +163,7 @@ export function Dashboard() {
                         <ChevronRight size={16} className="text-muted shrink-0" />
                       </Link>
                       {a.reason === 'checkin' && a.refId && (
-                        <button onClick={() => { data.reviewCheckIn(a.refId!); toast.success('Check-in marked as reviewed') }} className="shrink-0 rounded-lg px-2.5 h-8 text-[13px] font-medium text-sage-700 hover:bg-sage-50">Reviewed</button>
+                        <button onClick={() => { data.reviewCheckIn(a.refId!); toast.success('Check-in marked as reviewed') }} className="shrink-0 rounded-lg px-2.5 h-8 text-[13px] font-medium text-brand-700 hover:bg-brand-50">Reviewed</button>
                       )}
                     </li>
                   )
@@ -176,7 +176,7 @@ export function Dashboard() {
         <div className="space-y-6">
           {/* Inbox */}
           <Card>
-            <CardHeader title="Messages & check-ins" icon={Inbox} action={<Link to="/messages" className="text-sm text-sage-700 hover:underline">All messages</Link>} />
+            <CardHeader title="Messages & check-ins" icon={Inbox} action={<Link to="/messages" className="text-sm text-brand-700 hover:underline">All messages</Link>} />
             {convos.length === 0 && checkIns.length === 0 ? (
               <p className="px-5 pb-5 text-sm text-muted">You’re all caught up.</p>
             ) : (
@@ -185,13 +185,13 @@ export function Dashboard() {
                   const cl = clients.get(c.clientId)!
                   return (
                     <li key={c.clientId}>
-                      <Link to={`/messages/${c.clientId}`} className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-stone-50">
+                      <Link to={`/messages/${c.clientId}`} className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-neutral-50">
                         <Avatar name={cl.name} color={cl.color} size={32} />
                         <span className="flex-1 min-w-0">
                           <span className="flex items-center justify-between gap-2"><span className="text-sm font-medium">{cl.name}</span><span className="text-xs text-muted">{timeAgo(c.last!.sentAt)}</span></span>
                           <span className="block text-[13px] text-ink-soft truncate">{c.last!.text}</span>
                         </span>
-                        <span className="h-2 w-2 rounded-full bg-sage-500 shrink-0" aria-label="Unread" />
+                        <span className="h-2 w-2 rounded-full bg-brand-500 shrink-0" aria-label="Unread" />
                       </Link>
                     </li>
                   )
@@ -200,7 +200,7 @@ export function Dashboard() {
                   const cl = clients.get(p.clientId)!
                   return (
                     <li key={p.id}>
-                      <Link to={`/clients/${p.clientId}?tab=progress`} className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-stone-50">
+                      <Link to={`/clients/${p.clientId}?tab=progress`} className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-neutral-50">
                         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-appt-bg text-appt"><ClipboardCheck size={16} /></span>
                         <span className="flex-1 min-w-0">
                           <span className="block text-sm font-medium">{cl.name} — check-in{p.weight ? ` · ${p.weight} kg` : ''}</span>
@@ -223,7 +223,7 @@ export function Dashboard() {
                   const Icon = f.kind === 'completed' ? CheckCircle2 : f.kind === 'message' ? MessageCircle : f.kind === 'checkin' ? ClipboardCheck : f.kind === 'weight' ? Scale : UserRoundPlus
                   return (
                     <li key={f.kind + f.id} className="flex gap-3 py-2">
-                      <span className={cn('mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full', f.kind === 'completed' ? 'bg-done-bg text-done' : 'bg-stone-100 text-ink-soft')}><Icon size={13} /></span>
+                      <span className={cn('mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full', f.kind === 'completed' ? 'bg-done-bg text-done' : 'bg-neutral-100 text-ink-soft')}><Icon size={13} /></span>
                       <Link to={f.link} className="flex-1 min-w-0 text-sm hover:underline decoration-line-strong">{f.text}</Link>
                       <span className="shrink-0 text-xs text-muted pt-0.5">{timeAgo(f.at)}</span>
                     </li>

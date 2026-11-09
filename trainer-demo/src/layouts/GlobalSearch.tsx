@@ -61,14 +61,14 @@ export function GlobalSearch({ className }: { className?: string }) {
         }}
         placeholder="Search clients, workouts, exercises…"
         aria-label="Search"
-        className="h-10 w-full rounded-xl border border-line bg-white pl-9 pr-14 text-sm placeholder:text-muted focus:border-sage-400 focus:outline-none focus:ring-4 focus:ring-sage-100"
+        className="h-10 w-full rounded-xl border border-line bg-white pl-9 pr-3 xl:pr-14 text-sm placeholder:text-muted focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-100"
       />
-      <kbd className="hidden sm:block absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md border border-line bg-stone-50 px-1.5 py-0.5 text-[11px] text-muted">{isMac ? '⌘' : 'Ctrl'} K</kbd>
+      <kbd className="hidden xl:block absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md border border-line bg-neutral-50 px-1.5 py-0.5 text-[11px] text-muted">{isMac ? '⌘' : 'Ctrl'} K</kbd>
       {open && q.trim() && (
         <div className="absolute left-0 right-0 top-12 z-50 rounded-xl border border-line bg-white p-1.5 shadow-pop animate-pop">
           {results.length === 0 && <p className="px-3 py-4 text-sm text-muted">Nothing found for “{q}”.</p>}
           {results.map((r, i) => (
-            <button key={r.sub + r.id} onMouseEnter={() => setActive(i)} onClick={() => go(r)} className={cn('flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left', i === active && 'bg-stone-100')}>
+            <button key={r.sub + r.id} onMouseEnter={() => setActive(i)} onClick={() => go(r)} className={cn('flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left', i === active && 'bg-neutral-100')}>
               <r.icon size={16} className="text-muted" />
               <span className="flex-1 truncate text-sm">{r.label}</span>
               <span className="text-xs text-muted">{r.sub}</span>

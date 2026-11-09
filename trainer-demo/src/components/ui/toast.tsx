@@ -29,10 +29,10 @@ export function Toaster() {
         const Icon = t.tone === 'success' ? CheckCircle2 : t.tone === 'error' ? AlertTriangle : Info
         return (
           <div key={t.id} className="pointer-events-auto flex items-center gap-3 rounded-xl bg-ink text-white pl-3.5 pr-2 py-2.5 shadow-pop animate-rise text-sm max-w-md">
-            <Icon size={18} className={t.tone === 'success' ? 'text-sage-300' : t.tone === 'error' ? 'text-red-300' : 'text-sky-300'} />
+            <Icon size={18} className={t.tone === 'success' ? 'text-white' : t.tone === 'error' ? 'text-red-300' : 'text-white/70'} />
             <span className="flex-1">{t.text}</span>
             {t.action && (
-              <button className="font-semibold text-sage-200 hover:text-white px-2" onClick={() => { t.action!.onClick(); dismiss(t.id) }}>
+              <button className="font-semibold text-white underline underline-offset-2 hover:text-white/80 px-2" onClick={() => { t.action!.onClick(); dismiss(t.id) }}>
                 {t.action.label}
               </button>
             )}

@@ -4,37 +4,53 @@
 @theme {
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  --color-canvas: #f6f5f1;
-  --color-line: #e7e4dc;
-  --color-line-strong: #d6d2c7;
-  --color-ink: #1f2421;
-  --color-ink-soft: #4a514d;
-  --color-muted: #7a817c;
+  /* ── Muscle Up Strength & Conditioning design tokens ─────────────────
+   * Black & white brand. Mirror of these values for JS (charts, SVG): src/theme.ts
+   */
+  --color-black: #111111;
+  --color-canvas: #f3f3f3;      /* main background */
+  --color-surface: #ffffff;     /* cards */
+  --color-line: #e2e2e2;        /* borders */
+  --color-line-strong: #cccccc;
+  --color-ink: #111111;         /* headings & primary text */
+  --color-ink-soft: #3d3d3d;    /* body text */
+  --color-muted: #666666;       /* secondary text */
+  --color-faint: #a3a3a3;       /* placeholders, inactive icons */
 
-  --color-sage-50: #f0f6f3;
-  --color-sage-100: #dcebe4;
-  --color-sage-200: #bcd9cc;
-  --color-sage-300: #8fbfab;
-  --color-sage-400: #5f9e88;
-  --color-sage-500: #3f826d;
-  --color-sage-600: #336a59;
-  --color-sage-700: #2b5649;
-  --color-sage-800: #24463c;
+  /* Neutral accent scale (replaces the old green). 600 = primary black. */
+  --color-brand-50: #f3f3f3;
+  --color-brand-100: #e8e8e8;
+  --color-brand-200: #dadada;
+  --color-brand-300: #a3a3a3;
+  --color-brand-400: #111111;
+  --color-brand-500: #111111;
+  --color-brand-600: #111111;
+  --color-brand-700: #2b2b2b;
+  --color-brand-800: #111111;
 
-  --color-done: #2f7d55;
-  --color-done-bg: #e6f3ec;
-  --color-miss: #b4483c;
-  --color-miss-bg: #fbecea;
-  --color-plan: #3f6fa8;
-  --color-plan-bg: #eaf1fa;
-  --color-appt: #7a5aa6;
-  --color-appt-bg: #f2edf8;
-  --color-warn: #a86a12;
-  --color-warn-bg: #fbf2e2;
+  /* Sidebar */
+  --color-sidebar: #111111;
+  --color-sidebar-raised: #1d1d1d;
+  --color-sidebar-active: #2a2a2a;
+  --color-sidebar-line: #262626;
+  --color-sidebar-text: #ffffff;
+  --color-sidebar-muted: #a3a3a3;
 
-  --shadow-card: 0 1px 2px rgba(31, 36, 33, 0.04), 0 1px 3px rgba(31, 36, 33, 0.05);
-  --shadow-lift: 0 4px 14px rgba(31, 36, 33, 0.08), 0 1px 3px rgba(31, 36, 33, 0.06);
-  --shadow-pop: 0 18px 50px rgba(31, 36, 33, 0.18), 0 2px 8px rgba(31, 36, 33, 0.08);
+  /* Functional statuses — restrained, used sparingly with icons + labels */
+  --color-done: #2e6b4c;
+  --color-done-bg: #e9f2ed;
+  --color-miss: #a23b30;
+  --color-miss-bg: #f8eceb;
+  --color-plan: #111111;        /* scheduled = neutral */
+  --color-plan-bg: #f3f3f3;
+  --color-appt: #4a4a57;        /* appointments = cool slate */
+  --color-appt-bg: #ececf0;
+  --color-warn: #8a5b14;
+  --color-warn-bg: #f7f0e4;
+
+  --shadow-card: 0 1px 2px rgba(17, 17, 17, 0.03);
+  --shadow-lift: 0 6px 18px rgba(17, 17, 17, 0.06), 0 1px 2px rgba(17, 17, 17, 0.04);
+  --shadow-pop: 0 20px 50px rgba(17, 17, 17, 0.16), 0 2px 8px rgba(17, 17, 17, 0.06);
 
   --animate-fade-in: fade-in 160ms ease-out;
   --animate-rise: rise 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -58,15 +74,26 @@ html, body, #root { height: 100%; }
 body {
   background: var(--color-canvas);
   color: var(--color-ink);
-  font-feature-settings: 'cv11', 'ss01';
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-sage-500);
+  outline: 2px solid var(--color-black);
   outline-offset: 2px;
   border-radius: 6px;
+}
+
+/* Text fields show focus with a crisp black border + soft grey halo instead of an outline.
+   In the base layer so component utility classes can still override it. */
+@layer base {
+  input:focus-visible, textarea:focus-visible, select:focus-visible {
+    outline: none;
+    border-color: var(--color-black);
+    box-shadow: 0 0 0 3px var(--color-brand-100);
+  }
+  input[type='checkbox']:focus-visible { outline: 2px solid var(--color-black); box-shadow: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -77,7 +104,7 @@ body {
 .prose-workout { line-height: 1.6; font-size: 0.975rem; color: var(--color-ink); }
 .prose-workout > * + * { margin-top: 0.5em; }
 .prose-workout h1 { font-size: 1.35rem; font-weight: 650; letter-spacing: -0.01em; margin-top: 0.9em; }
-.prose-workout h2 { font-size: 1.12rem; font-weight: 650; margin-top: 1.1em; color: var(--color-sage-700); }
+.prose-workout h2 { font-size: 1.12rem; font-weight: 700; margin-top: 1.1em; color: var(--color-ink); letter-spacing: -0.01em; }
 .prose-workout h3 { font-size: 1rem; font-weight: 650; margin-top: 0.9em; }
 .prose-workout > :first-child { margin-top: 0; }
 .prose-workout ul { list-style: disc; padding-left: 1.3em; }
@@ -85,7 +112,7 @@ body {
 .prose-workout li + li { margin-top: 0.15em; }
 .prose-workout li p { margin: 0; }
 .prose-workout strong { font-weight: 650; }
-.prose-workout blockquote { border-left: 3px solid var(--color-sage-200); padding-left: 0.9em; color: var(--color-ink-soft); }
+.prose-workout blockquote { border-left: 3px solid var(--color-line); padding-left: 0.9em; color: var(--color-ink-soft); }
 .prose-workout hr { border: 0; border-top: 1px solid var(--color-line); margin: 1em 0; }
 .prose-workout p:empty::before { content: '\00a0'; }
 

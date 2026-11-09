@@ -67,7 +67,7 @@ export function ExerciseSearch({ onPick, placeholder = 'Search exercises to add 
         }}
         placeholder={placeholder}
         aria-label="Search exercises"
-        className={cn('w-full rounded-xl border border-line bg-white text-sm placeholder:text-muted focus:border-sage-400 focus:outline-none focus:ring-4 focus:ring-sage-100', compact ? 'h-9 pl-8 pr-3' : 'h-12 pl-10 pr-3 text-[15px] shadow-card')}
+        className={cn('w-full rounded-xl border border-line bg-white text-sm placeholder:text-muted focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-100', compact ? 'h-9 pl-8 pr-3' : 'h-12 pl-10 pr-3 text-[15px] shadow-card')}
       />
       {open && options.length > 0 && (
         <ul role="listbox" className="absolute z-30 left-0 right-0 mt-1 max-h-80 overflow-y-auto rounded-xl border border-line bg-white p-1 shadow-pop animate-pop">
@@ -78,12 +78,12 @@ export function ExerciseSearch({ onPick, placeholder = 'Search exercises to add 
                 onMouseDown={(e) => e.preventDefault()}
                 onMouseEnter={() => setActive(i)}
                 onClick={() => pick(i)}
-                className={cn('flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left', i === active && 'bg-sage-50')}
+                className={cn('flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left', i === active && 'bg-brand-50')}
               >
                 {o.ex ? (
                   <>
                     <span className="flex-1 min-w-0">
-                      <span className="flex items-center gap-1.5 text-sm font-medium">{o.name}{favs.includes(o.ex.id) && <Star size={12} className="fill-amber-400 text-amber-400" />}{o.ex.custom && <span className="text-[11px] font-normal text-sage-700">Custom</span>}</span>
+                      <span className="flex items-center gap-1.5 text-sm font-medium">{o.name}{favs.includes(o.ex.id) && <Star size={12} className="fill-ink text-ink" />}{o.ex.custom && <span className="text-[11px] font-normal text-brand-700">Custom</span>}</span>
                       <span className="block text-xs text-muted">{o.ex.primaryMuscle} · {o.ex.equipment}</span>
                     </span>
                     <span className="text-xs text-muted">{o.ex.category}</span>

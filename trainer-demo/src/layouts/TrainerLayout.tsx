@@ -43,13 +43,18 @@ export function TrainerLayout() {
   const navigate = useNavigate()
   const reset = useResetDemo()
 
-  const profileMenu = (
+  const profileMenu = (dark: boolean) => (
     <Menu
       trigger={(p) => (
-        <button {...p} className="flex items-center gap-2 rounded-xl px-1.5 py-1 hover:bg-black/[0.04]" aria-label="Profile menu">
-          <Avatar name={trainer.name} size={32} color="#336a59" />
-          <span className="hidden xl:block text-sm font-medium">{trainer.name.split(' ')[0]}</span>
-          <ChevronDown size={15} className="hidden xl:block text-muted" />
+        <button {...p} className={cn('flex items-center gap-2.5 rounded-xl px-1.5 py-1 transition-colors', dark ? 'hover:bg-sidebar-active' : 'hover:bg-black/[0.04]')} aria-label="Profile menu">
+          <Avatar name={trainer.name} size={32} dark={dark} />
+          {dark && (
+            <span className="text-left leading-tight">
+              <span className="block text-sm font-medium text-white">{trainer.name}</span>
+              <span className="block text-[11px] text-sidebar-muted">Head coach</span>
+            </span>
+          )}
+          {dark && <ChevronDown size={15} className="text-sidebar-muted" />}
         </button>
       )}
       items={[
@@ -63,44 +68,46 @@ export function TrainerLayout() {
   return (
     <div className="flex min-h-[calc(100vh-44px)]">
       {/* Sidebar — desktop */}
-      <aside className="hidden lg:flex w-60 shrink-0 flex-col border-r border-line bg-[#fbfaf7] sticky top-11 h-[calc(100vh-44px)]">
-        <div className="px-5 pt-5 pb-4">
-          <Logo />
+      <aside className="hidden lg:flex w-64 shrink-0 flex-col bg-sidebar text-sidebar-text sticky top-11 h-[calc(100vh-44px)]">
+        <div className="px-5 pt-6 pb-5">
+          <Logo inverted />
         </div>
-        <div className="px-3 pb-3">
-          <button onClick={() => openQuick()} className="flex w-full items-center justify-center gap-2 rounded-xl bg-sage-600 px-4 h-11 text-sm font-semibold text-white shadow-[0_1px_2px_rgba(0,0,0,0.12)] hover:bg-sage-700 active:scale-[0.98] transition-all">
+        <div className="px-4 pb-4">
+          <button onClick={() => openQuick()} className="flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 h-11 text-sm font-semibold text-ink hover:bg-[#ececec] active:scale-[0.98] transition-all">
             <Zap size={17} /> Quick Session
           </button>
         </div>
-        <nav className="flex-1 px-3 space-y-0.5" aria-label="Main">
+        <p className="px-7 pb-2 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-sidebar-muted/70">Menu</p>
+        <nav className="flex-1 px-4 space-y-0.5" aria-label="Main">
           {NAV.map((n) => {
             const active = n.match(pathname)
             return (
-              <NavLink key={n.to} to={n.to} className={cn('flex items-center gap-3 rounded-xl px-3 h-10 text-[14.5px] font-medium transition-colors', active ? 'bg-white text-ink shadow-card border border-line/70' : 'text-ink-soft hover:bg-black/[0.035] hover:text-ink border border-transparent')}>
-                <n.icon size={18} className={active ? 'text-sage-600' : 'text-muted'} />
+              <NavLink key={n.to} to={n.to} aria-current={active ? 'page' : undefined} className={cn('relative flex items-center gap-3 rounded-xl px-3 h-10 text-[14.5px] font-medium transition-colors', active ? 'bg-sidebar-active text-white' : 'text-white/85 hover:bg-sidebar-raised hover:text-white')}>
+                {active && <span className="absolute left-0 top-2.5 bottom-2.5 w-[3px] rounded-full bg-white" aria-hidden />}
+                <n.icon size={18} className={active ? 'text-white' : 'text-sidebar-muted'} />
                 <span className="flex-1">{n.label}</span>
-                {n.label === 'Messages' && unread > 0 && <span className="min-w-5 h-5 rounded-full bg-sage-600 px-1.5 text-[11px] font-semibold text-white inline-flex items-center justify-center">{unread}</span>}
+                {n.label === 'Messages' && unread > 0 && <span className="min-w-5 h-5 rounded-full bg-white px-1.5 text-[11px] font-bold text-ink inline-flex items-center justify-center">{unread}</span>}
               </NavLink>
             )
           })}
         </nav>
-        <div className="border-t border-line p-3 flex items-center justify-between">
-          {profileMenu}
-          <NavLink to="/settings" aria-label="Settings" className="p-2 rounded-lg text-muted hover:text-ink hover:bg-black/[0.04]"><Settings size={17} /></NavLink>
+        <div className="border-t border-sidebar-line px-3 py-3 flex items-center justify-between">
+          {profileMenu(true)}
+          <NavLink to="/settings" aria-label="Settings" className="p-2 rounded-lg text-sidebar-muted hover:text-white hover:bg-sidebar-active"><Settings size={17} /></NavLink>
         </div>
       </aside>
 
       <div className="flex-1 min-w-0 flex flex-col">
         {/* Top bar */}
-        <header className="sticky top-11 z-30 bg-canvas/85 backdrop-blur border-b border-line/60">
+        <header className="sticky top-11 z-30 bg-canvas/90 backdrop-blur border-b border-line">
           <div className="flex h-16 items-center gap-3 px-4 sm:px-6 lg:px-8">
             <div className="lg:hidden"><Logo compact /></div>
             <GlobalSearch className="flex-1 max-w-md" />
             <span className="flex-1 hidden sm:block" />
-            <button onClick={() => openQuick()} className="lg:hidden inline-flex items-center gap-1.5 rounded-xl bg-sage-600 px-3 h-10 text-sm font-semibold text-white" aria-label="Quick Session">
+            <button onClick={() => openQuick()} className="lg:hidden inline-flex items-center gap-1.5 rounded-xl bg-ink px-3 h-10 text-sm font-semibold text-white" aria-label="Quick Session">
               <Zap size={16} /> <span className="hidden sm:inline">Quick Session</span>
             </button>
-            <div className="lg:hidden">{profileMenu}</div>
+            <div className="lg:hidden">{profileMenu(false)}</div>
           </div>
         </header>
 
@@ -117,10 +124,11 @@ export function TrainerLayout() {
           {NAV.map((n) => {
             const active = n.match(pathname)
             return (
-              <NavLink key={n.to} to={n.to} className={cn('relative flex flex-col items-center justify-center gap-1 h-16 text-[11px] font-medium', active ? 'text-sage-700' : 'text-muted')}>
-                <n.icon size={21} strokeWidth={active ? 2.3 : 1.9} />
+              <NavLink key={n.to} to={n.to} className={cn('relative flex flex-col items-center justify-center gap-1 h-16 text-[11px] font-medium', active ? 'text-ink font-semibold' : 'text-muted')}>
+                {active && <span className="absolute top-0 left-1/2 -translate-x-1/2 h-[3px] w-8 rounded-b-full bg-ink" aria-hidden />}
+                <n.icon size={21} strokeWidth={active ? 2.4 : 1.8} />
                 {n.label}
-                {n.label === 'Messages' && unread > 0 && <span className="absolute top-2 left-1/2 ml-2 h-4 min-w-4 rounded-full bg-sage-600 px-1 text-[10px] text-white inline-flex items-center justify-center">{unread}</span>}
+                {n.label === 'Messages' && unread > 0 && <span className="absolute top-2 left-1/2 ml-2 h-4 min-w-4 rounded-full bg-ink px-1 text-[10px] text-white inline-flex items-center justify-center">{unread}</span>}
               </NavLink>
             )
           })}

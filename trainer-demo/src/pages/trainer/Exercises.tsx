@@ -52,7 +52,7 @@ export function ExercisesPage() {
       <div className="mb-3 relative max-w-xl">
         <Search size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
         <input value={q} onChange={(e) => setQ(e.target.value)} autoFocus placeholder="Search — try “hip thrust” or “kettlebell”" aria-label="Search exercises"
-          className="h-12 w-full rounded-xl border border-line bg-white pl-10 pr-3 text-[15px] shadow-card focus:border-sage-400 focus:outline-none focus:ring-4 focus:ring-sage-100" />
+          className="h-12 w-full rounded-xl border border-line bg-white pl-10 pr-3 text-[15px] shadow-card focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-100" />
       </div>
 
       <div className="mb-3 flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
@@ -63,8 +63,8 @@ export function ExercisesPage() {
       <div className="mb-5 flex flex-wrap items-center gap-2">
         <select aria-label="Muscle group" value={muscle} onChange={(e) => setMuscle(e.target.value)} className="h-9 rounded-lg border border-line bg-white px-2.5 text-sm"><option value="">Any muscle group</option>{muscles.map((m) => <option key={m}>{m}</option>)}</select>
         <select aria-label="Equipment" value={equip} onChange={(e) => setEquip(e.target.value)} className="h-9 rounded-lg border border-line bg-white px-2.5 text-sm"><option value="">Any equipment</option>{equipment.map((m) => <option key={m}>{m}</option>)}</select>
-        <button onClick={() => setOnlyFav((v) => !v)} aria-pressed={onlyFav} className={cn('inline-flex items-center gap-1.5 rounded-lg border px-3 h-9 text-sm', onlyFav ? 'border-amber-300 bg-amber-50 text-amber-800' : 'border-line bg-white text-ink-soft')}><Star size={14} className={onlyFav ? 'fill-amber-400 text-amber-400' : ''} /> Favourites</button>
-        <button onClick={() => setOnlyCustom((v) => !v)} aria-pressed={onlyCustom} className={cn('rounded-lg border px-3 h-9 text-sm', onlyCustom ? 'border-sage-300 bg-sage-50 text-sage-800' : 'border-line bg-white text-ink-soft')}>My exercises</button>
+        <button onClick={() => setOnlyFav((v) => !v)} aria-pressed={onlyFav} className={cn('inline-flex items-center gap-1.5 rounded-lg border px-3 h-9 text-sm', onlyFav ? 'border-ink bg-ink text-white' : 'border-line bg-white text-ink-soft')}><Star size={14} className={onlyFav ? 'fill-white text-white' : ''} /> Favourites</button>
+        <button onClick={() => setOnlyCustom((v) => !v)} aria-pressed={onlyCustom} className={cn('rounded-lg border px-3 h-9 text-sm', onlyCustom ? 'border-brand-300 bg-brand-50 text-brand-800' : 'border-line bg-white text-ink-soft')}>My exercises</button>
         {filtersOn && <button onClick={clear} className="inline-flex items-center gap-1 text-sm text-muted hover:text-ink"><X size={14} /> Clear filters</button>}
         <span className="ml-auto text-sm text-muted">{rows.length} shown</span>
       </div>
@@ -75,13 +75,13 @@ export function ExercisesPage() {
         <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
           {rows.slice(0, 240).map((e) => (
             <Card key={e.id} className="relative flex items-start gap-3 p-3.5 hover:shadow-lift hover:border-line-strong transition-all">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-stone-100 text-ink-soft text-sm font-semibold">{e.name.slice(0, 1)}</span>
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-neutral-100 text-ink-soft text-sm font-semibold">{e.name.slice(0, 1)}</span>
               <button onClick={() => setParams({ open: e.id })} className="flex-1 min-w-0 text-left after:absolute after:inset-0">
-                <span className="flex items-center gap-1.5 font-medium leading-snug">{e.name}{e.custom && <Badge tone="sage">Custom</Badge>}</span>
+                <span className="flex items-center gap-1.5 font-medium leading-snug">{e.name}{e.custom && <Badge tone="brand">Custom</Badge>}</span>
                 <span className="block text-[13px] text-muted">{e.primaryMuscle} · {e.equipment}</span>
               </button>
-              <button onClick={() => toggleFavourite(e.id)} aria-label={favs.includes(e.id) ? `Remove ${e.name} from favourites` : `Add ${e.name} to favourites`} aria-pressed={favs.includes(e.id)} className="relative z-10 p-1.5 rounded-lg hover:bg-stone-100">
-                <Star size={17} className={favs.includes(e.id) ? 'fill-amber-400 text-amber-400' : 'text-muted'} />
+              <button onClick={() => toggleFavourite(e.id)} aria-label={favs.includes(e.id) ? `Remove ${e.name} from favourites` : `Add ${e.name} to favourites`} aria-pressed={favs.includes(e.id)} className="relative z-10 p-1.5 rounded-lg hover:bg-neutral-100">
+                <Star size={17} className={favs.includes(e.id) ? 'fill-ink text-ink' : 'text-muted'} />
               </button>
             </Card>
           ))}
@@ -102,7 +102,7 @@ function ExerciseDetail({ exercise: e, onClose, onEdit }: { exercise?: Exercise;
   if (!e) return <Modal open={false} onClose={onClose} />
   const isImg = e.mediaUrl && /^data:image|\.(png|jpe?g|gif|webp|svg)(\?|$)/i.test(e.mediaUrl)
   return (
-    <Modal open onClose={onClose} size="lg" title={e.name} description={<span className="flex flex-wrap gap-1.5 mt-1"><Badge tone="sage">{e.category}</Badge><Badge>{e.difficulty}</Badge><Badge>{e.equipment}</Badge>{e.custom && <Badge tone="blue">Your exercise</Badge>}</span>}
+    <Modal open onClose={onClose} size="lg" title={e.name} description={<span className="flex flex-wrap gap-1.5 mt-1"><Badge tone="brand">{e.category}</Badge><Badge>{e.difficulty}</Badge><Badge>{e.equipment}</Badge>{e.custom && <Badge tone="blue">Your exercise</Badge>}</span>}
       footer={<>
         {e.custom && <Button variant="ghost" icon={Trash2} className="mr-auto text-miss" onClick={async () => { if (await confirm({ title: `Delete “${e.name}”?`, message: 'Workouts that already use it keep the exercise name.', confirmLabel: 'Delete', danger: true })) { deleteCustomExercise(e.id); onClose(); toast.success('Exercise deleted') } }}>Delete</Button>}
         {e.custom && <Button icon={Pencil} onClick={() => onEdit(e)}>Edit</Button>}
@@ -116,7 +116,7 @@ function ExerciseDetail({ exercise: e, onClose, onEdit }: { exercise?: Exercise;
             <>
               <h3 className="mt-5 mb-2 text-sm font-semibold">How to do it</h3>
               <ol className="space-y-2">
-                {e.instructions.map((s, i) => <li key={i} className="flex gap-3 text-sm leading-relaxed"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sage-50 text-xs font-semibold text-sage-700">{i + 1}</span>{s}</li>)}
+                {e.instructions.map((s, i) => <li key={i} className="flex gap-3 text-sm leading-relaxed"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-50 text-xs font-semibold text-brand-700">{i + 1}</span>{s}</li>)}
               </ol>
             </>
           )}
@@ -124,13 +124,13 @@ function ExerciseDetail({ exercise: e, onClose, onEdit }: { exercise?: Exercise;
           <p className="mt-4 text-xs text-muted">General guidance only — adjust for each client.</p>
         </div>
         <div className="space-y-3 text-sm">
-          <div className="rounded-xl bg-stone-50 p-3">
+          <div className="rounded-xl bg-neutral-50 p-3">
             <p className="text-xs text-muted">Primary</p><p className="font-medium">{e.primaryMuscle}</p>
             {e.secondaryMuscles.length > 0 && <><p className="mt-2 text-xs text-muted">Also works</p><p>{e.secondaryMuscles.join(', ')}</p></>}
           </div>
           {e.mediaUrl ? (
             isImg ? <img src={e.mediaUrl} alt={`${e.name} demonstration`} className="w-full rounded-xl border border-line object-cover" /> :
-              <a href={e.mediaUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded-xl border border-line p-3 text-sage-700 hover:bg-sage-50"><ExternalLink size={16} /> Watch demonstration</a>
+              <a href={e.mediaUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded-xl border border-line p-3 text-brand-700 hover:bg-brand-50"><ExternalLink size={16} /> Watch demonstration</a>
           ) : (
             <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-line p-4 text-center text-xs text-muted">
               <ImagePlus size={20} className="mb-1" />No demo media{e.custom ? ' — add a link via Edit' : ''}

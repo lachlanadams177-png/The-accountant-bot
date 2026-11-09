@@ -1,4 +1,4 @@
-# Muscle up, strength and conditioning — interactive demo
+# MUSCLE UP STRENGTH & CONDITIONING — interactive demo
 
 A working, clickable demo of a simpler personal-training platform: a trainer dashboard for
 desktop/tablet and a mobile-first client app. It runs entirely on your own computer, with no accounts,
@@ -6,15 +6,24 @@ API keys or servers.
 
 ## Run it
 
-You need [Node.js](https://nodejs.org) 20 or newer.
+You need [Node.js](https://nodejs.org) 20 or newer (the "LTS" download is fine) and
+[Git](https://git-scm.com/download/win).
 
-```bash
+**Windows (PowerShell or Command Prompt):**
+
+```powershell
+git clone https://github.com/lachlanadams177-png/The-accountant-bot.git
+cd The-accountant-bot
+git checkout claude/personal-training-demo-4p3r0n
 cd trainer-demo
-npm install        # first time only
-npm run dev        # starts http://localhost:5173
+npm install
+npm run dev
 ```
 
-Open **http://localhost:5173** in Chrome, Edge, Safari or Firefox.
+If you already cloned it, update instead with `git pull` (inside the repo, on that branch), then
+`cd trainer-demo`, `npm install`, `npm run dev`.
+
+Open **http://localhost:5173** in your browser. Press `Ctrl + C` in the terminal to stop it.
 
 Other commands:
 
@@ -30,7 +39,7 @@ To try the client app on a phone, connect it to the same Wi-Fi as your laptop an
 
 - The dark **Demo bar** at the top switches between **Trainer view** and **Client view**. In client
   view you choose which client you're "logged in" as.
-- **Quick Session** (green button, top left) is the fastest path: pick a client and a day, type, then
+- **Quick Session** (white button at the top of the black sidebar) is the fastest path: pick a client and a day, type, then
   Save & Assign.
 - **Profile menu → Settings → Reset Demo Data** puts all the example data back.
 
@@ -79,6 +88,16 @@ node tests/extra-flows.cjs ./test-output
 ```
 
 Each script uses a fresh browser profile, so it doesn't touch your own demo data.
+
+## Branding & design tokens
+
+Black-and-white Muscle Up branding. All colours are defined once:
+
+- `src/index.css` — the `@theme` block (Tailwind tokens: `canvas`, `surface`, `line`, `ink`, `muted`,
+  `faint`, the neutral `brand-*` scale, `sidebar-*`, and restrained status colours).
+- `src/theme.ts` — the same values for JavaScript (charts) plus the business name.
+
+The dumbbell mark in `src/layouts/Logo.tsx` is a **placeholder** until the real logo is supplied.
 
 ## Code layout
 

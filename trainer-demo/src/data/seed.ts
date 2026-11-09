@@ -788,7 +788,7 @@ function buildCompletion(w: Workout, s: ScheduledSession, clientId: ID, n: numbe
           sets: Array.from({ length: count }, (_, k) => ({
             done: true,
             weight,
-            reps: reps ? String(Math.max(1, +reps - (k === count - 1 && rand() < 0.3 ? 1 : 0))) : it.reps?.match(/^\d+/)?.[0],
+            reps: reps ? String(Math.max(1, +reps - (k === count - 1 && rand() < 0.3 ? 1 : 0))) : it.reps,
           })),
         })
       }

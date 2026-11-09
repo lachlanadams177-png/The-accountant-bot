@@ -16,7 +16,7 @@ export function ClientMessages() {
   return (
     <div className="flex h-[calc(100dvh-44px-64px)] sm:h-full flex-col">
       <div className="flex items-center gap-3 border-b border-line bg-white px-5 py-3.5">
-        <Avatar name={trainer.name} color="#336a59" size={38} />
+        <Avatar name={trainer.name} size={38} />
         <div><p className="font-semibold">{trainer.name}</p><p className="text-xs text-muted">Your trainer</p></div>
       </div>
       <ChatThread className="flex-1" messages={messages} me="client" otherName={trainer.name.split(' ')[0]} onSend={(t) => sendMessage(clientId, 'client', t)} />

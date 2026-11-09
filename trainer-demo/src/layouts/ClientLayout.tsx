@@ -22,7 +22,7 @@ export function ClientLayout() {
   const inChat = pathname === '/client/messages'
 
   return (
-    <div className="min-h-[calc(100vh-44px)] sm:py-6 bg-[#eeece6]">
+    <div className="min-h-[calc(100vh-44px)] sm:py-6 bg-[#e8e8e8]">
       <div className="relative mx-auto w-full max-w-[440px] min-h-[calc(100vh-44px)] sm:min-h-0 sm:h-[min(880px,calc(100vh-92px))] bg-canvas sm:rounded-[28px] sm:border sm:border-line sm:shadow-lift flex flex-col sm:overflow-hidden">
         <div id="client-scroll" className={cn('flex-1 animate-fade-in sm:overflow-y-auto sm:min-h-0', !inWorkout && !inChat && 'pb-24 sm:pb-4')} key={pathname}>
           {client ? <Outlet /> : <EmptyState title="No client selected" text="Choose a client from the Demo bar above." />}
@@ -31,12 +31,13 @@ export function ClientLayout() {
           <nav aria-label="Client" className="fixed sm:static bottom-0 inset-x-0 mx-auto w-full max-w-[440px] z-30 border-t border-line bg-white/95 backdrop-blur pb-safe sm:rounded-b-[28px]">
             <div className="grid grid-cols-4">
               {TABS.map((t) => (
-                <NavLink key={t.to} to={t.to} end={t.end} className={({ isActive }) => cn('relative flex flex-col items-center justify-center gap-1 h-16 text-xs font-medium', isActive ? 'text-sage-700' : 'text-muted')}>
+                <NavLink key={t.to} to={t.to} end={t.end} className={({ isActive }) => cn('relative flex flex-col items-center justify-center gap-1 h-16 text-xs font-medium', isActive ? 'text-ink font-semibold' : 'text-muted')}>
                   {({ isActive }) => (
                     <>
-                      <t.icon size={22} strokeWidth={isActive ? 2.3 : 1.9} />
+                      {isActive && <span className="absolute top-0 left-1/2 -translate-x-1/2 h-[3px] w-8 rounded-b-full bg-ink" aria-hidden />}
+                      <t.icon size={22} strokeWidth={isActive ? 2.4 : 1.8} />
                       {t.label}
-                      {t.label === 'Messages' && unread > 0 && <span className="absolute top-2 left-1/2 ml-2.5 h-4 min-w-4 rounded-full bg-sage-600 px-1 text-[10px] text-white inline-flex items-center justify-center">{unread}</span>}
+                      {t.label === 'Messages' && unread > 0 && <span className="absolute top-2 left-1/2 ml-2.5 h-4 min-w-4 rounded-full bg-brand-600 px-1 text-[10px] text-white inline-flex items-center justify-center">{unread}</span>}
                     </>
                   )}
                 </NavLink>

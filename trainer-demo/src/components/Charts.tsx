@@ -1,9 +1,10 @@
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { fmtDM } from '../lib/date'
+import { theme } from '../theme'
 
-const INK_MUTED = '#7a817c'
-const GRID = '#ece9e2'
-const SERIES = '#3f826d'
+const INK_MUTED = theme.secondaryText
+const GRID = theme.gridLine
+const SERIES = theme.black
 
 const axis = { tick: { fill: INK_MUTED, fontSize: 12 }, axisLine: false, tickLine: false } as const
 
@@ -37,7 +38,7 @@ export function TrendChart({ data, dataKey, unit, height = 220 }: { data: { date
           <CartesianGrid stroke={GRID} vertical={false} />
           <XAxis dataKey="date" tickFormatter={fmtDM} {...axis} minTickGap={24} />
           <YAxis domain={[Math.floor(min - pad), Math.ceil(max + pad)]} {...axis} width={44} />
-          <Tooltip content={<Tip unit={unit} />} cursor={{ stroke: '#c9c5ba', strokeDasharray: '3 3' }} />
+          <Tooltip content={<Tip unit={unit} />} cursor={{ stroke: theme.mediumGrey, strokeDasharray: '3 3' }} />
           <Line type="monotone" dataKey={dataKey} stroke={SERIES} strokeWidth={2} dot={{ r: 4, fill: SERIES, stroke: '#fff', strokeWidth: 2 }} activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }} isAnimationActive={false} />
         </LineChart>
       </ResponsiveContainer>
@@ -54,7 +55,7 @@ export function WeeklyBars({ data, height = 180 }: { data: { week: string; compl
           <CartesianGrid stroke={GRID} vertical={false} />
           <XAxis dataKey="week" tickFormatter={fmtDM} {...axis} />
           <YAxis allowDecimals={false} {...axis} width={40} />
-          <Tooltip content={<Tip unit=" completed" />} cursor={{ fill: 'rgba(31,36,33,0.04)' }} />
+          <Tooltip content={<Tip unit=" completed" />} cursor={{ fill: 'rgba(17,17,17,0.04)' }} />
           <Bar dataKey="completed" fill={SERIES} radius={[4, 4, 0, 0]} isAnimationActive={false} />
         </BarChart>
       </ResponsiveContainer>

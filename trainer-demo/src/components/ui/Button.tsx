@@ -9,11 +9,11 @@ type Size = 'sm' | 'md' | 'lg'
 const base =
   'inline-flex items-center justify-center gap-2 font-medium rounded-xl transition-all duration-150 select-none whitespace-nowrap disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]'
 const variants: Record<Variant, string> = {
-  primary: 'bg-sage-600 text-white hover:bg-sage-700 shadow-[0_1px_2px_rgba(0,0,0,0.12)]',
-  secondary: 'bg-white text-ink border border-line hover:border-line-strong hover:bg-stone-50 shadow-card',
+  primary: 'bg-ink text-white hover:bg-[#2b2b2b] shadow-[0_1px_2px_rgba(0,0,0,0.14)]',
+  secondary: 'bg-white text-ink border border-line hover:border-line-strong hover:bg-[#fafafa] shadow-card',
   ghost: 'text-ink-soft hover:bg-black/[0.04] hover:text-ink',
   danger: 'bg-miss text-white hover:bg-[#9c3b30]',
-  soft: 'bg-sage-50 text-sage-700 hover:bg-sage-100',
+  soft: 'bg-[#ececec] text-ink hover:bg-[#e2e2e2]',
 }
 const sizes: Record<Size, string> = {
   sm: 'h-8 px-3 text-[13px] rounded-lg',

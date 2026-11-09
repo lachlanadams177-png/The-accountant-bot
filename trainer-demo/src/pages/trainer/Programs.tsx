@@ -79,7 +79,7 @@ function ProgramLibrary() {
                 <div className="mt-4 flex flex-wrap gap-1.5">
                   <Badge>{p.weeks.length} week{p.weeks.length === 1 ? '' : 's'}</Badge>
                   <Badge>{sessionsPerWeek(p)} sessions / week</Badge>
-                  {p.goal && <Badge tone="sage">{p.goal}</Badge>}
+                  {p.goal && <Badge tone="brand">{p.goal}</Badge>}
                 </div>
                 <div className="mt-auto pt-5 flex items-center justify-between">
                   <span className="inline-flex items-center gap-1.5 text-sm text-ink-soft"><Users size={15} className="text-muted" /> {n} client{n === 1 ? '' : 's'}</span>
@@ -117,7 +117,7 @@ function WorkoutLibrary() {
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[220px] max-w-sm">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search workouts" aria-label="Search workouts" className="h-10 w-full rounded-xl border border-line bg-white pl-9 pr-3 text-sm focus:border-sage-400 focus:outline-none focus:ring-4 focus:ring-sage-100" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search workouts" aria-label="Search workouts" className="h-10 w-full rounded-xl border border-line bg-white pl-9 pr-3 text-sm focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-100" />
         </div>
         <Segmented size="sm" value={kind} onChange={setKind} options={[{ value: 'all', label: 'All' }, { value: 'write', label: 'Quick Write' }, { value: 'build', label: 'Structured' }]} />
       </div>
@@ -128,7 +128,7 @@ function WorkoutLibrary() {
           {rows.map((w) => (
             <Card key={w.id} className="relative flex flex-col p-4 hover:shadow-lift hover:border-line-strong transition-all">
               <div className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sage-50 text-sage-600">{w.mode === 'write' ? <PenLine size={17} /> : <LayoutList size={17} />}</span>
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600">{w.mode === 'write' ? <PenLine size={17} /> : <LayoutList size={17} />}</span>
                 <div className="flex-1 min-w-0">
                   <Link to={`/workouts/${w.id}`} className="after:absolute after:inset-0"><h3 className="font-semibold leading-snug">{w.name}</h3></Link>
                   <p className="text-xs text-muted">{w.mode === 'write' ? 'Quick Write' : `${countExercises(w)} exercises`} · edited {timeAgo(w.updatedAt)}</p>

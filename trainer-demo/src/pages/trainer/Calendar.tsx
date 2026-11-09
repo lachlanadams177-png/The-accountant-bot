@@ -19,9 +19,9 @@ import type { ISODate, ScheduledSession } from '../../types'
 const stateStyle: Record<SessionState, string> = {
   completed: 'bg-done-bg border-done/25 text-done',
   missed: 'bg-miss-bg border-miss/25 text-miss',
-  today: 'bg-sage-50 border-sage-300 text-sage-800',
-  upcoming: 'bg-plan-bg border-plan/20 text-plan',
-  appointment: 'bg-appt-bg border-appt/25 text-appt',
+  today: 'bg-ink border-ink text-white',
+  upcoming: 'bg-white border-line text-ink',
+  appointment: 'bg-appt-bg border-appt/20 text-appt',
 }
 const StateIcon = ({ s }: { s: SessionState }) => {
   const I = s === 'completed' ? CheckCircle2 : s === 'missed' ? CircleAlert : s === 'appointment' ? CalendarClock : Circle
@@ -106,10 +106,10 @@ export function CalendarPage() {
               const list = byDate.get(d) ?? []
               const restForClient = clientFilter && !list.some((s) => s.kind === 'workout')
               return (
-                <DayDrop key={d} id={d} className={cn('rounded-2xl border bg-white p-2 lg:min-h-[420px] flex flex-col', d === t ? 'border-sage-300 ring-2 ring-sage-100' : 'border-line/70')}>
+                <DayDrop key={d} id={d} className={cn('rounded-2xl border bg-white p-2 lg:min-h-[420px] flex flex-col', d === t ? 'border-brand-300 ring-2 ring-brand-100' : 'border-line/70')}>
                   <div className="mb-2 flex items-center justify-between px-1">
-                    <span className="text-sm"><span className="font-semibold">{DAY_SHORT[i]}</span> <span className={cn('text-muted', d === t && 'text-sage-700 font-medium')}>{fromISO(d).getDate()}</span></span>
-                    <button aria-label={`Add session on ${fmtLong(d)}`} onClick={() => setAddFor(d)} className="h-7 w-7 inline-flex items-center justify-center rounded-lg text-muted hover:bg-stone-100 hover:text-ink"><Plus size={16} /></button>
+                    <span className="text-sm"><span className="font-semibold">{DAY_SHORT[i]}</span> <span className={cn('text-muted', d === t && 'ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-ink px-1 text-xs font-semibold text-white')}>{fromISO(d).getDate()}</span></span>
+                    <button aria-label={`Add session on ${fmtLong(d)}`} onClick={() => setAddFor(d)} className="h-7 w-7 inline-flex items-center justify-center rounded-lg text-muted hover:bg-neutral-100 hover:text-ink"><Plus size={16} /></button>
                   </div>
                   <div className="space-y-1.5 flex-1">
                     {list.map((s) => (
@@ -130,8 +130,8 @@ export function CalendarPage() {
                 const list = byDate.get(d) ?? []
                 const inMonth = fromISO(d).getMonth() === month
                 return (
-                  <DayDrop key={d} id={d} className={cn('min-h-[96px] sm:min-h-[118px] border-b border-r border-line/60 p-1', !inMonth && 'bg-stone-50/70')}>
-                    <button onClick={() => { setAnchor(d); setView('week') }} className={cn('mb-1 h-6 min-w-6 rounded-full px-1.5 text-xs', d === t ? 'bg-sage-600 text-white font-semibold' : inMonth ? 'text-ink-soft hover:bg-stone-100' : 'text-muted/60')}>{fromISO(d).getDate()}</button>
+                  <DayDrop key={d} id={d} className={cn('min-h-[96px] sm:min-h-[118px] border-b border-r border-line/60 p-1', !inMonth && 'bg-neutral-50/70')}>
+                    <button onClick={() => { setAnchor(d); setView('week') }} className={cn('mb-1 h-6 min-w-6 rounded-full px-1.5 text-xs', d === t ? 'bg-brand-600 text-white font-semibold' : inMonth ? 'text-ink-soft hover:bg-neutral-100' : 'text-muted/60')}>{fromISO(d).getDate()}</button>
                     <div className="space-y-1">
                       {list.slice(0, 3).map((s) => <SessionCard key={s.id} s={s} compact onOpen={() => setOpenId(s.id)} title={clientFilter ? label(s) : clientMap.get(s.clientId)?.name.split(' ')[0] ?? ''} />)}
                       {list.length > 3 && <button onClick={() => { setAnchor(d); setView('week') }} className="px-1 text-[11px] text-muted hover:text-ink">+{list.length - 3} more</button>}
@@ -153,7 +153,7 @@ export function CalendarPage() {
 
 function DayDrop({ id, className, children }: { id: string; className?: string; children: React.ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({ id })
-  return <div ref={setNodeRef} className={cn(className, isOver && 'bg-sage-50/80 border-sage-300')}>{children}</div>
+  return <div ref={setNodeRef} className={cn(className, isOver && 'bg-brand-50/80 border-brand-300')}>{children}</div>
 }
 
 function SessionCard({ s, onOpen, title, clientName, compact }: { s: ScheduledSession; onOpen: () => void; title: string; clientName?: string; compact?: boolean }) {
@@ -206,8 +206,8 @@ function AddSessionModal({ date, onClose, defaultClient }: { date: ISODate | nul
     <Modal open={!!date} onClose={onClose} size="md" title="Add to calendar"
       footer={<><Button variant="ghost" onClick={onClose}>Cancel</Button><Button variant="primary" onClick={save}>{kind === 'workout' ? 'Schedule workout' : 'Add appointment'}</Button></>}>
       <div className="grid gap-4">
-        <button onClick={() => { onClose(); openQuick({ date: d, clientId: clientId || undefined }) }} className="flex items-center gap-3 rounded-xl border border-sage-200 bg-sage-50 px-4 py-3 text-left hover:border-sage-300">
-          <Zap size={18} className="text-sage-600" />
+        <button onClick={() => { onClose(); openQuick({ date: d, clientId: clientId || undefined }) }} className="flex items-center gap-3 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-left hover:border-brand-300">
+          <Zap size={18} className="text-brand-600" />
           <span><span className="block text-sm font-semibold">Write a free-text session</span><span className="text-xs text-muted">Opens Quick Session for {fmtDay(d)}</span></span>
         </button>
         <Segmented value={kind} onChange={(v) => { setKind(v); setErr('') }} options={[{ value: 'workout', label: 'Library workout', icon: Library }, { value: 'appointment', label: 'PT appointment', icon: CalendarClock }]} />

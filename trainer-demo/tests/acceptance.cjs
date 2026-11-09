@@ -25,7 +25,8 @@ const S = (p) => p.evaluate(() => window.__muscleup.getState());
     await p.waitForURL(/\/clients\/c-/);
     await p.reload(); await p.waitForTimeout(400);
     await p.goto(URL + '/clients');
-    ok('A create client persists', await p.getByText('Test Client').count() > 0);
+    const modeOk = (await S(p)).mode === 'trainer' && (await p.getByRole('tab', { name: /Trainer/ }).getAttribute('aria-selected')) === 'true';
+    ok('A create client persists', await p.getByText('Test Client').count() > 0 && modeOk, `demo bar shows trainer view=${modeOk}`);
   });
 
   let writeId;

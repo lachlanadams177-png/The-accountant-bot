@@ -20,10 +20,10 @@ export function DemoBar() {
   }
 
   return (
-    <div className="sticky top-0 z-40 bg-ink text-white/90 text-[13px]">
+    <div className="sticky top-0 z-40 bg-[#000000] text-white/90 text-[13px] border-b border-white/10">
       <div className="mx-auto flex h-11 items-center gap-2 sm:gap-3 px-3 sm:px-5">
         <span className="inline-flex items-center gap-2 shrink-0">
-          <span className="h-2 w-2 rounded-full bg-amber-300 shadow-[0_0_0_3px_rgba(252,211,77,0.2)]" aria-hidden />
+          <span className="h-2 w-2 rounded-full bg-white shadow-[0_0_0_3px_rgba(255,255,255,0.18)]" aria-hidden />
           <span className="font-semibold text-white">Demo<span className="hidden sm:inline"> mode</span></span>
           <span className="hidden md:inline text-white/55">· everything is saved in this browser only</span>
         </span>

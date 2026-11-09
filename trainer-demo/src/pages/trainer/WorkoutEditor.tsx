@@ -149,7 +149,7 @@ export function WorkoutEditor() {
     return (
       <div className="py-16 text-center">
         <p className="font-semibold">Workout not found</p>
-        <Link to="/workouts" className="mt-2 inline-block text-sage-700 underline">Back to workouts</Link>
+        <Link to="/workouts" className="mt-2 inline-block text-brand-700 underline">Back to workouts</Link>
       </div>
     )
   }
@@ -264,8 +264,8 @@ export function WorkoutEditor() {
           ) : (
             <>
               {w.blocks.length === 0 && !isHtmlEmpty(w.html) && (
-                <div className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl border border-sage-200 bg-sage-50 px-4 py-3 text-sm">
-                  <Wand2 size={17} className="text-sage-600" />
+                <div className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm">
+                  <Wand2 size={17} className="text-brand-600" />
                   <span className="flex-1 text-ink-soft">You’ve written this one in Quick Write. Want to turn it into an exercise list?</span>
                   <Button size="sm" variant="primary" onClick={() => setConvert(parseTextToBlocks(w.html, exercises))}>Convert text</Button>
                 </div>
@@ -307,7 +307,7 @@ export function WorkoutEditor() {
           )}
           {(usedIn.length > 0) && (
             <SidePanel title="Used in">
-              <ul className="space-y-1 text-sm">{usedIn.map((p) => <li key={p.id}><Link className="text-sage-700 hover:underline" to={`/programs/${p.id}`}>{p.name}</Link>{p.clientId && <Badge className="ml-1.5">client copy</Badge>}</li>)}</ul>
+              <ul className="space-y-1 text-sm">{usedIn.map((p) => <li key={p.id}><Link className="text-brand-700 hover:underline" to={`/programs/${p.id}`}>{p.name}</Link>{p.clientId && <Badge className="ml-1.5">client copy</Badge>}</li>)}</ul>
             </SidePanel>
           )}
         </aside>
@@ -319,7 +319,7 @@ export function WorkoutEditor() {
           <p className="text-xs text-muted">Today’s workout</p>
           <h3 className="text-xl font-semibold tracking-tight">{w.name || 'Untitled workout'}</h3>
           <div className="mt-3 rounded-2xl bg-white p-4 border border-line max-h-[55vh] overflow-y-auto"><WorkoutView workout={w} /></div>
-          <div className="mt-3 h-12 rounded-xl bg-sage-600 text-white flex items-center justify-center font-semibold">Start workout</div>
+          <div className="mt-3 h-12 rounded-xl bg-brand-600 text-white flex items-center justify-center font-semibold">Start workout</div>
         </div>
       </Modal>
 
@@ -330,7 +330,7 @@ export function WorkoutEditor() {
           <ul className="divide-y divide-line/70 rounded-xl border border-line">
             {convert.map((c, i) => (
               <li key={i} className="flex items-start gap-3 px-3.5 py-2 text-sm">
-                <span className={cn('mt-0.5 w-20 shrink-0 text-xs font-medium', c.block.type === 'exercise' ? 'text-sage-700' : c.block.type === 'section' ? 'text-plan' : 'text-muted')}>
+                <span className={cn('mt-0.5 w-20 shrink-0 text-xs font-medium', c.block.type === 'exercise' ? 'text-brand-700' : c.block.type === 'section' ? 'text-plan' : 'text-muted')}>
                   {c.block.type === 'exercise' ? 'Exercise' : c.block.type === 'section' ? 'Heading' : 'Note'}
                 </span>
                 <span className="flex-1 min-w-0">
@@ -377,7 +377,7 @@ function SidePanel({ title, text, children }: { title: string; text?: string; ch
   )
 }
 
-const Kbd = ({ children }: { children: React.ReactNode }) => <kbd className="rounded border border-line bg-stone-50 px-1 py-px text-[11px] font-sans">{children}</kbd>
+const Kbd = ({ children }: { children: React.ReactNode }) => <kbd className="rounded border border-line bg-neutral-50 px-1 py-px text-[11px] font-sans">{children}</kbd>
 
 /* ───────────── Add to program */
 

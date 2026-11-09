@@ -52,7 +52,7 @@ export function ClientsPage() {
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[220px] max-w-sm">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name or goal" aria-label="Search clients" className="h-10 w-full rounded-xl border border-line bg-white pl-9 pr-3 text-sm focus:border-sage-400 focus:outline-none focus:ring-4 focus:ring-sage-100" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name or goal" aria-label="Search clients" className="h-10 w-full rounded-xl border border-line bg-white pl-9 pr-3 text-sm focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-100" />
         </div>
         <Segmented value={filter} onChange={setFilter} options={[{ value: 'active', label: `Active · ${counts.active}` }, { value: 'archived', label: `Archived · ${counts.archived}` }]} />
       </div>
@@ -70,7 +70,7 @@ export function ClientsPage() {
             </div>
             <ul className="divide-y divide-line/70">
               {rows.map(({ c, program, last, week }) => (
-                <li key={c.id} className="relative grid grid-cols-[1fr_auto] md:grid-cols-[2fr_1.6fr_1fr_1.1fr_auto] items-center gap-x-4 gap-y-2 px-4 md:px-5 py-3.5 hover:bg-stone-50/70 transition-colors">
+                <li key={c.id} className="relative grid grid-cols-[1fr_auto] md:grid-cols-[2fr_1.6fr_1fr_1.1fr_auto] items-center gap-x-4 gap-y-2 px-4 md:px-5 py-3.5 hover:bg-neutral-50/70 transition-colors">
                   <Link to={`/clients/${c.id}`} className="flex items-center gap-3 min-w-0 after:absolute after:inset-0">
                     <Avatar name={c.name} color={c.color} size={40} />
                     <span className="min-w-0">

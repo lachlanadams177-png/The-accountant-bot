@@ -16,7 +16,7 @@ import { EmptyState } from './ui/misc'
 
 type Group = Extract<WorkoutBlock, { type: 'group' }>
 
-const cellBase = 'h-9 rounded-lg border border-transparent bg-stone-100/70 px-2.5 text-sm tabular-nums placeholder:text-muted/70 hover:border-line focus:bg-white focus:border-sage-400 focus:outline-none focus:ring-2 focus:ring-sage-100'
+const cellBase = 'h-9 rounded-lg border border-transparent bg-neutral-100/70 px-2.5 text-sm tabular-nums placeholder:text-muted/70 hover:border-line focus:bg-white focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-100'
 const cellCls = cellBase + ' w-full'
 
 export function StructuredBuilder({ blocks, onChange }: { blocks: WorkoutBlock[]; onChange: (b: WorkoutBlock[]) => void }) {
@@ -152,14 +152,14 @@ function BlockCard(props: {
       <div className="flex items-start gap-2 pt-3 pb-1">
         <DragHandle handle={handle} />
         <input autoFocus={props.autoFocus} value={b.title} onChange={(e) => onChange({ title: e.target.value })} placeholder="Section heading — e.g. Warm up" aria-label="Section heading"
-          className="flex-1 min-w-0 bg-transparent text-[13px] font-semibold uppercase tracking-wider text-sage-700 placeholder:normal-case placeholder:tracking-normal placeholder:font-normal placeholder:text-muted focus:outline-none h-9" />
+          className="flex-1 min-w-0 bg-transparent text-[13px] font-semibold uppercase tracking-wider text-brand-700 placeholder:normal-case placeholder:tracking-normal placeholder:font-normal placeholder:text-muted focus:outline-none h-9" />
         {actions}
       </div>
     )
   }
   if (b.type === 'text') {
     return (
-      <div className="flex items-start gap-2 rounded-2xl bg-sage-50/70 border border-sage-100 px-3 py-2">
+      <div className="flex items-start gap-2 rounded-2xl bg-brand-50/70 border border-brand-100 px-3 py-2">
         <DragHandle handle={handle} />
         <textarea autoFocus={props.autoFocus} value={b.text} onChange={(e) => onChange({ text: e.target.value })} placeholder="Write any instructions here…" aria-label="Instructions"
           rows={Math.max(1, b.text.split('\n').length)} className="flex-1 min-w-0 resize-none bg-transparent py-1.5 text-sm leading-relaxed text-ink-soft placeholder:text-muted focus:outline-none" />
@@ -230,7 +230,7 @@ function ItemEditor({ item, onChange, inGroup, autoFocus }: { item: ExerciseItem
       <div className="flex flex-wrap items-end gap-x-4 gap-y-1.5">
         <div className="flex-1 min-w-[180px] pb-1">
           <input value={item.name} onChange={(e) => onChange({ name: e.target.value })} aria-label="Exercise name" className="w-full bg-transparent text-[15px] font-medium focus:outline-none h-8" />
-          {more ? null : <button type="button" onClick={() => setMore(true)} className="text-[12.5px] text-sage-700 hover:underline">+ Tempo & notes</button>}
+          {more ? null : <button type="button" onClick={() => setMore(true)} className="text-[12.5px] text-brand-700 hover:underline">+ Tempo & notes</button>}
         </div>
         <div className={cn('grid gap-1.5', inGroup ? 'grid-cols-3 w-full sm:w-[252px]' : 'grid-cols-4 w-full sm:w-[340px]')}>
           {!inGroup && cell('sets', 'Sets', '3')}

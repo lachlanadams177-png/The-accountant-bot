@@ -27,7 +27,7 @@ export function SettingsPage() {
         <div className="mt-4 flex justify-end"><Button variant="primary" disabled={!name.trim()} onClick={() => { updateTrainer({ name: name.trim(), business: business.trim() }); toast.success('Profile saved') }}>Save</Button></div>
       </Card>
       <Card className="mt-6 p-5">
-        <h2 className="flex items-center gap-2 font-semibold"><Database size={17} className="text-sage-600" /> Demo data</h2>
+        <h2 className="flex items-center gap-2 font-semibold"><Database size={17} className="text-brand-600" /> Demo data</h2>
         <p className="mt-2 text-sm text-ink-soft leading-relaxed">Everything in this demo is saved in this browser’s local storage — nothing is sent to a server. Right now there are {counts.c} clients, {counts.w} workouts (including client copies), {counts.p} programs and {counts.s} calendar sessions.</p>
         <p className="mt-2 flex gap-2 text-sm text-muted"><Info size={15} className="mt-0.5 shrink-0" /> Using a different browser or clearing site data starts fresh with the example data.</p>
         <div className="mt-4 flex justify-end"><Button variant="danger" icon={RotateCcw} onClick={reset}>Reset Demo Data</Button></div>

@@ -55,7 +55,7 @@ export function ProgramBuilder() {
     return () => window.removeEventListener('beforeunload', h)
   }, [dirty])
 
-  if (!p) return <div className="py-16 text-center"><p className="font-semibold">Program not found</p><Link to="/programs" className="text-sage-700 underline">Back to programs</Link></div>
+  if (!p) return <div className="py-16 text-center"><p className="font-semibold">Program not found</p><Link to="/programs" className="text-brand-700 underline">Back to programs</Link></div>
 
   const isClientCopy = !!p.clientId
   const set = (patch: Partial<Program>) => setP((x) => (x ? { ...x, ...patch } : x))
@@ -144,7 +144,7 @@ export function ProgramBuilder() {
           <span>You’re editing <strong>{client?.name}</strong>’s personal copy, starting {fmtDM(p.startDate!)}. The master program and other clients aren’t affected. Saving updates their upcoming sessions (completed and manually moved sessions are kept).</span>
         </div>
       ) : id && (
-        <div className="mb-5 flex items-start gap-2 rounded-xl bg-stone-100 px-4 py-3 text-sm text-ink-soft">
+        <div className="mb-5 flex items-start gap-2 rounded-xl bg-neutral-100 px-4 py-3 text-sm text-ink-soft">
           <Info size={16} className="mt-0.5 shrink-0" />
           <span>You’re editing the master template. Clients already on this program keep their own copies — changes here apply to future assignments.</span>
         </div>
@@ -252,15 +252,15 @@ function DayCell({ id, label, weekLabel, day, workout, onAdd, onOpen, onReplace,
   const drag = useDraggable({ id, disabled: !workout })
   const style = drag.transform ? { transform: `translate3d(${drag.transform.x}px, ${drag.transform.y}px, 0)` } : undefined
   return (
-    <div ref={setNodeRef} className={cn('relative min-h-[104px] rounded-xl border p-2 transition-colors', isOver ? 'border-sage-400 bg-sage-50' : workout ? 'border-line bg-white' : 'border-dashed border-line bg-stone-50/50')}>
+    <div ref={setNodeRef} className={cn('relative min-h-[104px] rounded-xl border p-2 transition-colors', isOver ? 'border-brand-400 bg-brand-50' : workout ? 'border-line bg-white' : 'border-dashed border-line bg-neutral-50/50')}>
       <p className="px-1 text-xs font-medium text-muted">{label}</p>
       {workout ? (
-        <div ref={drag.setNodeRef} style={style} className={cn('mt-1 rounded-lg bg-sage-50 border border-sage-100 p-2', drag.isDragging && 'z-30 shadow-pop relative opacity-95')}>
+        <div ref={drag.setNodeRef} style={style} className={cn('mt-1 rounded-lg bg-brand-50 border border-brand-100 p-2', drag.isDragging && 'z-30 shadow-pop relative opacity-95')}>
           <div className="flex items-start gap-1">
-            <button aria-label={`Drag ${workout.name}`} className="mt-0.5 -ml-0.5 cursor-grab touch-none text-sage-400 hover:text-sage-700" {...drag.listeners} {...drag.attributes}><GripVertical size={14} /></button>
-            <button onClick={onOpen} className="flex-1 min-w-0 text-left text-[13px] font-medium leading-snug text-sage-800 hover:underline">{workout.name}</button>
+            <button aria-label={`Drag ${workout.name}`} className="mt-0.5 -ml-0.5 cursor-grab touch-none text-brand-400 hover:text-brand-700" {...drag.listeners} {...drag.attributes}><GripVertical size={14} /></button>
+            <button onClick={onOpen} className="flex-1 min-w-0 text-left text-[13px] font-medium leading-snug text-brand-800 hover:underline">{workout.name}</button>
             <Menu
-              trigger={(t) => <button {...t} aria-label="Day actions" className="-mr-1 -mt-0.5 h-6 w-6 shrink-0 inline-flex items-center justify-center rounded-md text-sage-600 hover:bg-sage-100"><MoreHorizontal size={15} /></button>}
+              trigger={(t) => <button {...t} aria-label="Day actions" className="-mr-1 -mt-0.5 h-6 w-6 shrink-0 inline-flex items-center justify-center rounded-md text-brand-600 hover:bg-brand-100"><MoreHorizontal size={15} /></button>}
               items={[
                 { label: 'Open & edit workout', icon: PenLine, onClick: onOpen },
                 { label: 'Replace workout', icon: Replace, onClick: onReplace },
@@ -273,7 +273,7 @@ function DayCell({ id, label, weekLabel, day, workout, onAdd, onOpen, onReplace,
           </div>
         </div>
       ) : (
-        <button onClick={onAdd} aria-label={`Add a workout on ${label}${weekLabel ? ', ' + weekLabel : ''}`} className="mt-1 flex w-full flex-col items-center justify-center gap-0.5 rounded-lg py-2 text-muted hover:bg-white hover:text-sage-700 transition-colors">
+        <button onClick={onAdd} aria-label={`Add a workout on ${label}${weekLabel ? ', ' + weekLabel : ''}`} className="mt-1 flex w-full flex-col items-center justify-center gap-0.5 rounded-lg py-2 text-muted hover:bg-white hover:text-brand-700 transition-colors">
           <span className="text-[13px]">Rest</span>
           <span className="inline-flex items-center gap-1 text-xs font-medium"><Plus size={13} /> Add</span>
         </button>
@@ -302,8 +302,8 @@ function WorkoutPicker({ open, onClose, where, library, onPick, onCreateFull, on
       {tab === 'choose' ? (
         <>
           <div className="mb-3 grid gap-2 sm:grid-cols-2">
-            <button onClick={() => setTab('write')} className="flex items-center gap-3 rounded-xl border border-sage-200 bg-sage-50 px-4 py-3 text-left hover:border-sage-300">
-              <PenLine size={18} className="text-sage-600" /><span><span className="block text-sm font-semibold">Write a new workout here</span><span className="text-xs text-muted">Quick Write, without leaving</span></span>
+            <button onClick={() => setTab('write')} className="flex items-center gap-3 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-left hover:border-brand-300">
+              <PenLine size={18} className="text-brand-600" /><span><span className="block text-sm font-semibold">Write a new workout here</span><span className="text-xs text-muted">Quick Write, without leaving</span></span>
             </button>
             <button onClick={onCreateFull} className="flex items-center gap-3 rounded-xl border border-line px-4 py-3 text-left hover:border-line-strong">
               <FilePlus2 size={18} className="text-ink-soft" /><span><span className="block text-sm font-semibold">Open the full editor</span><span className="text-xs text-muted">Saves this program first</span></span>
@@ -311,13 +311,13 @@ function WorkoutPicker({ open, onClose, where, library, onPick, onCreateFull, on
           </div>
           <div className="relative mb-2">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-            <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Or choose an existing workout…" aria-label="Search workouts" className="h-10 w-full rounded-xl border border-line pl-9 pr-3 text-sm focus:border-sage-400 focus:outline-none focus:ring-4 focus:ring-sage-100" />
+            <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Or choose an existing workout…" aria-label="Search workouts" className="h-10 w-full rounded-xl border border-line pl-9 pr-3 text-sm focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-100" />
           </div>
           <ul className="max-h-[42vh] overflow-y-auto divide-y divide-line/70 rounded-xl border border-line">
             {rows.length === 0 && <li className="px-4 py-6 text-center text-sm text-muted">No workouts match.</li>}
             {rows.map((w) => (
               <li key={w.id}>
-                <button onClick={() => onPick(w)} className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-stone-50">
+                <button onClick={() => onPick(w)} className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-neutral-50">
                   <span className="flex-1 min-w-0">
                     <span className="flex items-center gap-2 text-sm font-medium">{w.name}{w.clientId && <Badge tone="blue">{clientName}’s</Badge>}</span>
                     <span className="block truncate text-xs text-muted">{workoutSummary(w)}</span>

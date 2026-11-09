@@ -16,7 +16,7 @@ export function CardHeader({ title, action, subtitle, icon: Icon }: { title: Rea
   return (
     <div className="flex items-center justify-between gap-3 px-5 pt-4 pb-3">
       <div className="flex items-center gap-2.5 min-w-0">
-        {Icon && <Icon size={17} className="text-sage-600 shrink-0" />}
+        {Icon && <Icon size={17} className="text-brand-600 shrink-0" />}
         <div className="min-w-0">
           <h2 className="text-[15px] font-semibold tracking-tight truncate">{title}</h2>
           {subtitle && <p className="text-xs text-muted mt-0.5">{subtitle}</p>}
@@ -32,12 +32,12 @@ export function initials(name: string) {
   return ((p[0]?.[0] ?? '') + (p.length > 1 ? p[p.length - 1][0] : '')).toUpperCase()
 }
 
-export function Avatar({ name, color = '#3f826d', size = 36, className }: { name: string; color?: string; size?: number; className?: string }) {
+export function Avatar({ name, size = 36, className, dark }: { name: string; color?: string; size?: number; className?: string; dark?: boolean }) {
   return (
     <span
       aria-hidden
-      className={cn('inline-flex shrink-0 items-center justify-center rounded-full font-semibold select-none', className)}
-      style={{ width: size, height: size, fontSize: size * 0.38, background: color + '1f', color }}
+      className={cn('inline-flex shrink-0 items-center justify-center rounded-full font-semibold tracking-wide select-none', dark ? 'bg-white text-ink' : 'bg-[#ececec] text-ink', className)}
+      style={{ width: size, height: size, fontSize: size * 0.36 }}
     >
       {initials(name)}
     </span>
@@ -50,8 +50,9 @@ const pill: Record<string, string> = {
   blue: 'bg-plan-bg text-plan',
   purple: 'bg-appt-bg text-appt',
   amber: 'bg-warn-bg text-warn',
-  grey: 'bg-stone-100 text-ink-soft',
-  sage: 'bg-sage-50 text-sage-700',
+  grey: 'bg-neutral-100 text-ink-soft',
+  dark: 'bg-ink text-white',
+  brand: 'bg-white border border-line text-ink-soft',
 }
 export function Badge({ tone = 'grey', children, className, icon: Icon }: { tone?: keyof typeof pill; children: ReactNode; className?: string; icon?: LucideIcon }) {
   return (
@@ -65,7 +66,7 @@ export function Badge({ tone = 'grey', children, className, icon: Icon }: { tone
 export const stateTone: Record<SessionState, keyof typeof pill> = {
   completed: 'green',
   missed: 'red',
-  today: 'sage',
+  today: 'brand',
   upcoming: 'blue',
   appointment: 'purple',
 }
@@ -81,7 +82,7 @@ export function EmptyState({ icon: Icon, title, text, action, className }: { ico
   return (
     <div className={cn('flex flex-col items-center text-center px-6 py-10', className)}>
       {Icon && (
-        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-sage-50 text-sage-600">
+        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
           <Icon size={22} />
         </div>
       )}
@@ -102,7 +103,7 @@ export function PageHeader({ title, subtitle, actions, back }: { title: ReactNod
       )}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="text-2xl sm:text-[28px] font-semibold tracking-tight">{title}</h1>
+          <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight">{title}</h1>
           {subtitle && <p className="mt-1 text-[15px] text-muted">{subtitle}</p>}
         </div>
         {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
@@ -113,7 +114,7 @@ export function PageHeader({ title, subtitle, actions, back }: { title: ReactNod
 
 export function Segmented<T extends string>({ value, onChange, options, size = 'md', className }: { value: T; onChange: (v: T) => void; options: { value: T; label: ReactNode; icon?: LucideIcon }[]; size?: 'sm' | 'md'; className?: string }) {
   return (
-    <div role="tablist" className={cn('inline-flex rounded-xl bg-stone-200/60 p-1', className)}>
+    <div role="tablist" className={cn('inline-flex rounded-xl bg-white border border-line p-1', className)}>
       {options.map((o) => {
         const active = o.value === value
         return (
@@ -125,7 +126,7 @@ export function Segmented<T extends string>({ value, onChange, options, size = '
             className={cn(
               'inline-flex items-center gap-1.5 rounded-lg font-medium transition-all',
               size === 'sm' ? 'px-2.5 h-7 text-[13px]' : 'px-3.5 h-8 text-sm',
-              active ? 'bg-white text-ink shadow-card' : 'text-ink-soft hover:text-ink',
+              active ? 'bg-ink text-white shadow-card' : 'text-ink-soft hover:text-ink',
             )}
           >
             {o.icon && <o.icon size={15} />}
@@ -148,7 +149,7 @@ export function Tabs<T extends string>({ value, onChange, tabs }: { value: T; on
           onClick={() => onChange(t.value)}
           className={cn(
             'relative -mb-px px-3.5 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors',
-            t.value === value ? 'border-sage-600 text-ink' : 'border-transparent text-muted hover:text-ink',
+            t.value === value ? 'border-ink text-ink font-semibold' : 'border-transparent text-muted hover:text-ink',
           )}
         >
           {t.label}
@@ -184,7 +185,7 @@ export function Menu({ trigger, items, align = 'right' }: { trigger: (p: { onCli
                 key={i}
                 role="menuitem"
                 onClick={() => { setOpen(false); it.onClick() }}
-                className={cn('flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm hover:bg-stone-100', it.danger ? 'text-miss' : 'text-ink')}
+                className={cn('flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm hover:bg-neutral-100', it.danger ? 'text-miss' : 'text-ink')}
               >
                 {it.icon && <it.icon size={16} className={it.danger ? '' : 'text-muted'} />}
                 {it.label}
@@ -199,8 +200,8 @@ export function Menu({ trigger, items, align = 'right' }: { trigger: (p: { onCli
 
 export function ProgressBar({ value, className }: { value: number | null; className?: string }) {
   return (
-    <div className={cn('h-1.5 w-full rounded-full bg-stone-200/70 overflow-hidden', className)}>
-      <div className="h-full rounded-full bg-sage-500 transition-all" style={{ width: `${value ?? 0}%` }} />
+    <div className={cn('h-1.5 w-full rounded-full bg-neutral-200/70 overflow-hidden', className)}>
+      <div className="h-full rounded-full bg-ink transition-all" style={{ width: `${value ?? 0}%` }} />
     </div>
   )
 }

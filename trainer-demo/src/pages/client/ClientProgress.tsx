@@ -31,7 +31,7 @@ export function ClientProgress() {
 
   return (
     <div className="px-5 pt-6 pb-4 space-y-5">
-      <h1 className="text-[26px] font-semibold tracking-tight">Progress</h1>
+      <h1 className="text-[26px] font-bold tracking-tight">Progress</h1>
 
       <Card className="p-4">
         <div className="flex items-baseline justify-between"><h2 className="font-semibold">Workouts per week</h2><span className="text-sm text-muted">{history[history.length - 1].completed} this week</span></div>
@@ -39,12 +39,12 @@ export function ClientProgress() {
       </Card>
 
       <Card className="p-4">
-        <h2 className="flex items-center gap-2 font-semibold"><Scale size={17} className="text-sage-600" /> Check in</h2>
+        <h2 className="flex items-center gap-2 font-semibold"><Scale size={17} className="text-brand-600" /> Check in</h2>
         <p className="text-sm text-muted">Log your weight and tell {trainer.name.split(' ')[0]} how you’re going.</p>
         <div className="mt-3 grid gap-2">
-          <input inputMode="decimal" value={w} onChange={(e) => setW(e.target.value)} placeholder="Weight in kg (optional)" aria-label="Weight in kg" className="h-12 rounded-xl border border-line px-3.5 text-[16px] focus:border-sage-400 focus:outline-none focus:ring-4 focus:ring-sage-100" />
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder="How’s your week been? (optional)" aria-label="Check-in note" className="rounded-xl border border-line px-3.5 py-2.5 text-[16px] focus:border-sage-400 focus:outline-none focus:ring-4 focus:ring-sage-100" />
-          <button onClick={submit} className="flex h-12 items-center justify-center gap-2 rounded-xl bg-sage-600 font-semibold text-white"><Send size={17} /> Send check-in</button>
+          <input inputMode="decimal" value={w} onChange={(e) => setW(e.target.value)} placeholder="Weight in kg (optional)" aria-label="Weight in kg" className="h-12 rounded-xl border border-line px-3.5 text-[16px] focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-100" />
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder="How’s your week been? (optional)" aria-label="Check-in note" className="rounded-xl border border-line px-3.5 py-2.5 text-[16px] focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-100" />
+          <button onClick={submit} className="flex h-12 items-center justify-center gap-2 rounded-xl bg-brand-600 font-semibold text-white"><Send size={17} /> Send check-in</button>
         </div>
       </Card>
 
@@ -55,7 +55,7 @@ export function ClientProgress() {
 
       {pbs.length > 0 && (
         <Card className="p-4">
-          <h2 className="flex items-center gap-2 font-semibold"><Trophy size={17} className="text-amber-500" /> Personal bests</h2>
+          <h2 className="flex items-center gap-2 font-semibold"><Trophy size={17} className="text-ink" /> Personal bests</h2>
           <ul className="mt-2 divide-y divide-line/70">
             {pbs.map((p) => <li key={p.exerciseKey} className="flex items-center justify-between py-2.5 text-[15px]"><span>{p.name}</span><span className="font-semibold tabular-nums">{p.weight} kg{p.reps ? ` × ${p.reps}` : ''}</span></li>)}
           </ul>
@@ -78,10 +78,10 @@ export function ClientProgress() {
       <Card className="p-4">
         <h2 className="font-semibold">Timeline</h2>
         {timeline.length === 0 ? <p className="mt-2 text-sm text-muted">Your completed workouts will show here.</p> : (
-          <ol className="mt-3 space-y-3 border-l-2 border-sage-100 pl-4">
+          <ol className="mt-3 space-y-3 border-l-2 border-brand-100 pl-4">
             {timeline.map((c) => (
               <li key={c.id} className="relative">
-                <CheckCircle2 size={16} className="absolute -left-[25px] top-0.5 bg-white text-sage-600" />
+                <CheckCircle2 size={16} className="absolute -left-[25px] top-0.5 bg-white text-brand-600" />
                 <p className="font-medium">{c.workoutName}</p>
                 <p className="text-sm text-muted">{relDay(c.date)}{c.notes ? ` · “${c.notes}”` : ''}</p>
               </li>

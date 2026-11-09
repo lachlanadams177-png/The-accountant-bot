@@ -103,8 +103,8 @@ export function AssignProgramModal({ open, onClose, programId, clientId }: { ope
               {clients.map((c) => {
                 const on = picked.includes(c.id)
                 return (
-                  <label key={c.id} className={cn('flex items-center gap-2.5 rounded-xl border px-3 py-2 cursor-pointer transition-colors', on ? 'border-sage-300 bg-sage-50' : 'border-line hover:border-line-strong')}>
-                    <input type="checkbox" className="h-4 w-4 accent-sage-600" checked={on} onChange={() => { setPicked((p) => (on ? p.filter((x) => x !== c.id) : [...p, c.id])); setErr('') }} />
+                  <label key={c.id} className={cn('flex items-center gap-2.5 rounded-xl border px-3 py-2 cursor-pointer transition-colors', on ? 'border-brand-300 bg-brand-50' : 'border-line hover:border-line-strong')}>
+                    <input type="checkbox" className="h-4 w-4 accent-brand-600" checked={on} onChange={() => { setPicked((p) => (on ? p.filter((x) => x !== c.id) : [...p, c.id])); setErr('') }} />
                     <Avatar name={c.name} color={c.color} size={26} />
                     <span className="text-sm truncate">{c.name}</span>
                   </label>
@@ -117,7 +117,7 @@ export function AssignProgramModal({ open, onClose, programId, clientId }: { ope
           <p className="mb-1.5 text-[13px] font-medium text-ink-soft">Starts</p>
           <div className="flex flex-wrap gap-2">
             {[thisMon, addDays(thisMon, 7)].map((d, i) => (
-              <button key={d} onClick={() => setStart(d)} className={cn('rounded-xl border px-3 h-10 text-sm', start === d ? 'border-sage-400 bg-sage-50 text-sage-800 font-medium' : 'border-line hover:border-line-strong')}>
+              <button key={d} onClick={() => setStart(d)} className={cn('rounded-xl border px-3 h-10 text-sm', start === d ? 'border-brand-400 bg-brand-50 text-brand-800 font-medium' : 'border-line hover:border-line-strong')}>
                 {i === 0 ? 'This week' : 'Next week'} <span className="text-muted">· Mon {fmtDay(d).split(' ').slice(1).join(' ')}</span>
               </button>
             ))}

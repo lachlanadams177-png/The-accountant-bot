@@ -35,7 +35,7 @@ export function ClientProfile() {
   const navigate = useNavigate()
   const [editing, setEditing] = useState(false)
 
-  if (!client) return <EmptyState title="Client not found" text="They may have been removed when the demo was reset." action={<Link to="/clients" className="text-sage-700 underline">Back to clients</Link>} />
+  if (!client) return <EmptyState title="Client not found" text="They may have been removed when the demo was reset." action={<Link to="/clients" className="text-brand-700 underline">Back to clients</Link>} />
 
   const archive = async () => {
     if (await confirm({ title: `Archive ${client.name}?`, message: 'Upcoming sessions will be removed. History stays and you can restore them any time.', confirmLabel: 'Archive', danger: true })) {
@@ -51,9 +51,9 @@ export function ClientProfile() {
         <Avatar name={client.name} color={client.color} size={60} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-[26px] font-semibold tracking-tight">{client.name}</h1>
+            <h1 className="text-[26px] font-bold tracking-tight">{client.name}</h1>
             {client.status === 'archived' && <Badge>Archived</Badge>}
-            {client.experience && <Badge tone="sage">{client.experience}</Badge>}
+            {client.experience && <Badge tone="brand">{client.experience}</Badge>}
           </div>
           <p className="text-[15px] text-ink-soft">{client.goal ?? 'No goal set yet'}</p>
         </div>
@@ -113,7 +113,7 @@ function Overview({ client, onEdit }: { client: Client; onEdit: () => void }) {
             <Row icon={Gauge} label="Experience" value={client.experience} />
             <Row icon={Mail} label="Email" value={client.email} />
             <Row icon={Phone} label="Phone" value={client.phone} />
-            {client.notes && <div className="rounded-xl bg-stone-50 px-3.5 py-3 text-ink-soft leading-relaxed"><span className="mb-1 flex items-center gap-1.5 text-xs font-medium text-muted"><Lock size={12} /> Trainer only</span>{client.notes}</div>}
+            {client.notes && <div className="rounded-xl bg-neutral-50 px-3.5 py-3 text-ink-soft leading-relaxed"><span className="mb-1 flex items-center gap-1.5 text-xs font-medium text-muted"><Lock size={12} /> Trainer only</span>{client.notes}</div>}
             <p className="text-xs text-muted">Client since {fmtShort(client.createdAt.slice(0, 10))}</p>
           </dl>
         </Card>
@@ -224,7 +224,7 @@ function ProgramTab({ client }: { client: Client }) {
             <div className="px-5 pt-4 pb-5">
               <div className="mb-3 flex items-center gap-1 overflow-x-auto no-scrollbar">
                 {program.weeks.map((_, i) => (
-                  <button key={i} onClick={() => setViewWeek(i)} className={cn('shrink-0 rounded-lg px-3 h-8 text-[13px] font-medium', i === viewWeek ? 'bg-ink text-white' : 'text-ink-soft hover:bg-stone-100', i === currentWeek && i !== viewWeek && 'ring-1 ring-sage-300')}>
+                  <button key={i} onClick={() => setViewWeek(i)} className={cn('shrink-0 rounded-lg px-3 h-8 text-[13px] font-medium', i === viewWeek ? 'bg-ink text-white' : 'text-ink-soft hover:bg-neutral-100', i === currentWeek && i !== viewWeek && 'ring-1 ring-brand-300')}>
                     Week {i + 1}{i === currentWeek ? ' · now' : ''}
                   </button>
                 ))}
@@ -235,7 +235,7 @@ function ProgramTab({ client }: { client: Client }) {
                   const s = sessions.find((x) => x.programId === program.id && x.slot === `${viewWeek}-${di}`)
                   const st = s ? sessionState(s) : null
                   return (
-                    <button key={di} disabled={!s} onClick={() => s && setOpenSession(s.id)} className={cn('rounded-xl border p-3 text-left min-h-[88px] transition-colors', d.workoutId ? 'border-line bg-white hover:border-line-strong' : 'border-dashed border-line bg-stone-50/60', date === t && 'ring-2 ring-sage-300')}>
+                    <button key={di} disabled={!s} onClick={() => s && setOpenSession(s.id)} className={cn('rounded-xl border p-3 text-left min-h-[88px] transition-colors', d.workoutId ? 'border-line bg-white hover:border-line-strong' : 'border-dashed border-line bg-neutral-50/60', date === t && 'ring-2 ring-brand-300')}>
                       <p className="text-xs text-muted">{DAY_SHORT[di]} {fmtDay(date).split(' ').slice(1).join(' ')}</p>
                       {d.workoutId ? (
                         <>
@@ -256,14 +256,14 @@ function ProgramTab({ client }: { client: Client }) {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <Card>
-          <CardHeader title="Schedule" subtitle="Last week to three weeks ahead" action={<Link to={`/calendar?client=${client.id}`} className="text-sm text-sage-700 hover:underline">Open calendar</Link>} />
+          <CardHeader title="Schedule" subtitle="Last week to three weeks ahead" action={<Link to={`/calendar?client=${client.id}`} className="text-sm text-brand-700 hover:underline">Open calendar</Link>} />
           {upcoming.length === 0 ? <EmptyState title="No workouts scheduled yet" text="Add a one-off session or assign a program." className="py-6" /> : (
             <ul className="px-2 pb-2">
               {upcoming.map((s) => {
                 const st = sessionState(s)
                 return (
                   <li key={s.id}>
-                    <button onClick={() => setOpenSession(s.id)} className={cn('flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-stone-50', s.date === t && 'bg-sage-50/60')}>
+                    <button onClick={() => setOpenSession(s.id)} className={cn('flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-neutral-50', s.date === t && 'bg-brand-50/60')}>
                       <span className="w-24 text-[13px] text-muted">{relDay(s.date)}</span>
                       <span className="flex-1 truncate text-sm font-medium">{s.kind === 'appointment' ? s.title : workouts.get(s.workoutId!)?.name}</span>
                       {!s.programId && s.kind === 'workout' && <Badge>One-off</Badge>}
@@ -461,7 +461,7 @@ function NotesTab({ client }: { client: Client }) {
 
   return (
     <div className="max-w-3xl space-y-4">
-      <p className="flex items-center gap-2 rounded-xl bg-stone-100 px-4 py-2.5 text-sm text-ink-soft"><Lock size={15} /> Private notes. {client.name.split(' ')[0]} never sees these.</p>
+      <p className="flex items-center gap-2 rounded-xl bg-neutral-100 px-4 py-2.5 text-sm text-ink-soft"><Lock size={15} /> Private notes. {client.name.split(' ')[0]} never sees these.</p>
       <Card className="p-4">
         <Textarea aria-label="New note" placeholder={`Write a note about ${client.name.split(' ')[0]}…`} value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') add() }} />
         <div className="mt-3 flex items-center justify-between">
@@ -477,8 +477,8 @@ function NotesTab({ client }: { client: Client }) {
                 <span className="text-sm font-medium">{fmtDay(n.date)}</span>
                 {editId !== n.id && (
                   <span className="flex gap-1">
-                    <button aria-label="Edit note" onClick={() => { setEditId(n.id); setEditText(n.text) }} className="p-1.5 rounded-lg text-muted hover:text-ink hover:bg-stone-100"><Pencil size={15} /></button>
-                    <button aria-label="Delete note" onClick={async () => { if (await confirm({ title: 'Delete this note?', confirmLabel: 'Delete', danger: true })) { deleteNote(n.id); toast.success('Note deleted') } }} className="p-1.5 rounded-lg text-muted hover:text-miss hover:bg-stone-100"><Trash2 size={15} /></button>
+                    <button aria-label="Edit note" onClick={() => { setEditId(n.id); setEditText(n.text) }} className="p-1.5 rounded-lg text-muted hover:text-ink hover:bg-neutral-100"><Pencil size={15} /></button>
+                    <button aria-label="Delete note" onClick={async () => { if (await confirm({ title: 'Delete this note?', confirmLabel: 'Delete', danger: true })) { deleteNote(n.id); toast.success('Note deleted') } }} className="p-1.5 rounded-lg text-muted hover:text-miss hover:bg-neutral-100"><Trash2 size={15} /></button>
                   </span>
                 )}
               </div>

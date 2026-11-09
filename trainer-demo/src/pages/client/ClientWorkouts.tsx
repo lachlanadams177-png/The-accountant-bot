@@ -23,8 +23,8 @@ export function ClientWorkouts() {
     const Icon = st === 'completed' ? CheckCircle2 : st === 'missed' ? CircleAlert : Circle
     return (
       <li>
-        <Link to={`/client/workout/${s.id}`} className="flex items-center gap-3 rounded-2xl bg-white border border-line/70 px-4 py-3.5 shadow-card active:bg-stone-50">
-          <Icon size={20} className={cn(st === 'completed' ? 'text-done' : st === 'missed' ? 'text-miss' : st === 'today' ? 'text-sage-600' : 'text-line-strong')} />
+        <Link to={`/client/workout/${s.id}`} className="flex items-center gap-3 rounded-2xl bg-white border border-line/70 px-4 py-3.5 shadow-card active:bg-neutral-50">
+          <Icon size={20} className={cn(st === 'completed' ? 'text-done' : st === 'missed' ? 'text-miss' : st === 'today' ? 'text-brand-600' : 'text-line-strong')} />
           <span className="flex-1 min-w-0"><span className="block font-medium truncate">{workouts.get(s.workoutId!)?.name ?? 'Workout'}</span><span className="text-sm text-muted">{relDay(s.date)}</span></span>
           <ChevronRight size={18} className="text-muted" />
         </Link>
@@ -34,7 +34,7 @@ export function ClientWorkouts() {
 
   return (
     <div className="px-5 pt-6">
-      <h1 className="text-[26px] font-semibold tracking-tight">Workouts</h1>
+      <h1 className="text-[26px] font-bold tracking-tight">Workouts</h1>
       <section className="mt-5">
         <h2 className="mb-2 text-sm font-semibold text-ink-soft">Coming up</h2>
         {upcoming.length ? <ul className="space-y-2">{upcoming.map((s) => <Row key={s.id} s={s} />)}</ul> : <EmptyState title="No workouts scheduled yet" text="Your trainer will add some soon." className="py-6" />}

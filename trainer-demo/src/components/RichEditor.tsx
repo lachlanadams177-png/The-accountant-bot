@@ -55,7 +55,7 @@ export function RichEditor({
   }, [value, editor])
 
   return (
-    <div className={cn('flex flex-col rounded-2xl border border-line bg-white shadow-card focus-within:border-sage-300 focus-within:ring-4 focus-within:ring-sage-50 transition-shadow', className)}>
+    <div className={cn('flex flex-col rounded-2xl border border-line bg-white shadow-card focus-within:border-brand-300 focus-within:ring-4 focus-within:ring-brand-50 transition-shadow', className)}>
       <Toolbar editor={editor} compact={compact} />
       <div
         className={cn('flex-1 cursor-text', compact ? 'px-4 py-3' : 'px-5 sm:px-7 py-5')}
@@ -80,7 +80,7 @@ function Toolbar({ editor, compact }: { editor: Editor | null; compact?: boolean
       title={shortcut ? `${label} (${shortcut})` : label}
       className={cn(
         'inline-flex h-8 min-w-8 items-center justify-center gap-1 rounded-lg px-1.5 text-[13px] transition-colors',
-        active ? 'bg-sage-100 text-sage-800' : 'text-ink-soft hover:bg-stone-100 hover:text-ink',
+        active ? 'bg-brand-100 text-brand-800' : 'text-ink-soft hover:bg-neutral-100 hover:text-ink',
       )}
     >
       <Icon size={16} />

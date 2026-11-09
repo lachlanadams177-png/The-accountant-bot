@@ -26,8 +26,8 @@ export function WorkoutView({ workout }: { workout: Workout }) {
   return (
     <div className="space-y-1">
       {workout.blocks.map((b) => {
-        if (b.type === 'section') return <h3 key={b.id} className="pt-3 text-[13px] font-semibold uppercase tracking-wider text-sage-700">{b.title}</h3>
-        if (b.type === 'text') return <p key={b.id} className="rounded-xl bg-sage-50/70 px-3.5 py-2.5 text-sm text-ink-soft leading-relaxed whitespace-pre-wrap">{b.text}</p>
+        if (b.type === 'section') return <h3 key={b.id} className="pt-3 text-[13px] font-semibold uppercase tracking-wider text-brand-700">{b.title}</h3>
+        if (b.type === 'text') return <p key={b.id} className="rounded-xl bg-brand-50/70 px-3.5 py-2.5 text-sm text-ink-soft leading-relaxed whitespace-pre-wrap">{b.text}</p>
         if (b.type === 'exercise') return <div key={b.id} className="border-b border-line/70 last:border-0"><ItemLine item={b} /></div>
         return (
           <div key={b.id} className="my-2 rounded-xl border border-line px-3.5 py-1.5">

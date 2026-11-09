@@ -32,7 +32,7 @@ export function MessagesPage() {
           <div className="p-3 border-b border-line">
             <div className="relative">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find a client" aria-label="Find a client" className="h-9 w-full rounded-lg border border-line pl-8 pr-3 text-sm focus:outline-none focus:border-sage-400" />
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find a client" aria-label="Find a client" className="h-9 w-full rounded-lg border border-line pl-8 pr-3 text-sm focus:outline-none focus:border-brand-400" />
             </div>
           </div>
           <ul className="flex-1 overflow-y-auto">
@@ -40,13 +40,13 @@ export function MessagesPage() {
               const cl = clients.find((x) => x.id === c.clientId)!
               return (
                 <li key={c.clientId}>
-                  <Link to={`/messages/${c.clientId}`} className={cn('flex items-center gap-3 px-3 py-3 border-l-2', c.clientId === clientId ? 'bg-sage-50 border-sage-500' : 'border-transparent hover:bg-stone-50')}>
+                  <Link to={`/messages/${c.clientId}`} className={cn('flex items-center gap-3 px-3 py-3 border-l-2', c.clientId === clientId ? 'bg-brand-50 border-brand-500' : 'border-transparent hover:bg-neutral-50')}>
                     <Avatar name={cl.name} color={cl.color} size={38} />
                     <span className="flex-1 min-w-0">
                       <span className="flex items-center justify-between gap-2"><span className={cn('text-sm truncate', c.unreadForTrainer ? 'font-semibold' : 'font-medium')}>{cl.name}</span>{c.last && <span className="text-[11px] text-muted shrink-0">{timeAgo(c.last.sentAt)}</span>}</span>
                       <span className={cn('block text-[13px] truncate', c.unreadForTrainer ? 'text-ink' : 'text-muted')}>{c.last ? `${c.last.from === 'trainer' ? 'You: ' : ''}${c.last.text}` : 'No messages yet'}</span>
                     </span>
-                    {c.unreadForTrainer > 0 && <span className="h-5 min-w-5 rounded-full bg-sage-600 px-1.5 text-[11px] font-semibold text-white inline-flex items-center justify-center">{c.unreadForTrainer}</span>}
+                    {c.unreadForTrainer > 0 && <span className="h-5 min-w-5 rounded-full bg-brand-600 px-1.5 text-[11px] font-semibold text-white inline-flex items-center justify-center">{c.unreadForTrainer}</span>}
                   </Link>
                 </li>
               )

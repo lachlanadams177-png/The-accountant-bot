@@ -30,7 +30,7 @@ function Root() {
   const setMode = useStore((s) => s.setMode)
   // keep the Demo bar in sync if someone uses the back button or a direct link
   useEffect(() => {
-    const want = pathname.startsWith('/client') ? 'client' : 'trainer'
+    const want = pathname === '/client' || pathname.startsWith('/client/') ? 'client' : 'trainer'
     if (want !== mode) setMode(want)
   }, [pathname, mode, setMode])
   useEffect(() => {
